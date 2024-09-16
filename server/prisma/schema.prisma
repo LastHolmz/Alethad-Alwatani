@@ -34,26 +34,32 @@ model Product {
   updatedAt     DateTime   @updatedAt
   barcode       String     @unique
   image         String
-  categories    Category[]
-  brands        Brand[]
+  categoryIDs   String[]   @db.ObjectId
+  categories    Category[] @relation(fields: [categoryIDs], references: [id])
+  brandIDs      String[]   @db.ObjectId
+  brands        Brand[]    @relation(fields: [brandIDs], references: [id])
   skus          Sku[]      @relation()
 }
 
 model Category {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  brands    Brand[]
-  Product   Product? @relation(fields: [productId], references: [id])
-  productId String?  @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  Product    Product[] @relation(fields: [productIDs], references: [id])
+  productIDs String[]  @db.ObjectId
+  main       Boolean   @default(false)
+  image      String?
+  brandIds   String[]  @db.ObjectId
+  brands     Brand[]   @relation(fields: [brandIds], references: [id])
 }
 
 model Brand {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  Category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?   @db.ObjectId
-  Product    Product?  @relation(fields: [productId], references: [id])
-  productId  String?   @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  Product     Product[]  @relation(fields: [productIDs], references: [id])
+  productIDs  String[]   @db.ObjectId
+  image       String?
+  categoryIDs String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIDs], references: [id])
 }
 
 model Sku {

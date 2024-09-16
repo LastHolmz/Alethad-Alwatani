@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GlobalVariables {
   static const double defalutRaduis = 40;
   static const double defaultPadding = 20;
+  static const double pageSize = 50;
 }
 
 Map<String, String> headers(String token) {

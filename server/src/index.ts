@@ -6,7 +6,13 @@ import cors from "cors";
 import prisma from "../prisma/db";
 import notFound from "./middlewares/not-found";
 import errorHandlerMiddleware from "./middlewares/error-handler";
-import { authRouters, productsRouters, skusRouters } from "./routes";
+import {
+  authRouters,
+  productsRouters,
+  skusRouters,
+  categoriesRouters,
+  brandsRouters,
+} from "./routes";
 // import bodyParser from 'body-parser';
 
 const app = express();
@@ -37,6 +43,8 @@ app.get("/", async (req, res) => {
 app.use("/api/v1/auth", authRouters);
 app.use("/api/v1/products", productsRouters);
 app.use("/api/v1/skus", skusRouters);
+app.use("/api/v1/categories", categoriesRouters);
+app.use("/api/v1/brands", brandsRouters);
 // app.use("/api/v1", isAuth, authorise(false, "user"), adminRoutes);
 app.use(notFound);
 app.use(errorHandlerMiddleware);

@@ -47,23 +47,29 @@ export const createProduct = async (req: Request, res: Response) => {
       description,
       originalPrice,
       skus,
-      brands,
-      categories,
+      brandIDs,
+      categoryIDs,
+      image,
+      barcode,
     }: {
       price: number;
       originalPrice?: number;
       title: string;
       description?: string;
       skus: Sku[];
-      brands?: string[];
-      categories?: string[];
+      brandIDs?: string[];
+      categoryIDs?: string[];
+      image: string;
+      barcode: string;
     } = req.body;
-
-    if (!title || !price || !skus) {
+    console.log(req.body);
+    //need to be returned
+    // if (!title || !price || !skus || !image) {
+    if (!title || !price || !image) {
       return res.status(400).json({ message: "يجب ملء كل الحقول" });
     }
 
-    const barcode = await generateUniqueBarcodeForProduct();
+    // const barcode = await generateUniqueBarcodeForProduct();
     const product = await prisma.product.create({
       data: {
         barcode,
@@ -72,6 +78,7 @@ export const createProduct = async (req: Request, res: Response) => {
         description,
         originalPrice,
         image:
+          image ??
           "https://images.unsplash.com/photo-1720048169970-9c651cf17ccd?q=80&w=1914&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         skus: {
           createMany: {
@@ -79,10 +86,10 @@ export const createProduct = async (req: Request, res: Response) => {
           },
         },
         brands: {
-          connect: brands?.map((brand) => ({ id: brand })),
+          connect: brandIDs?.map((brand) => ({ id: brand })),
         },
         categories: {
-          connect: categories?.map((category) => ({ id: category })),
+          connect: categoryIDs?.map((category) => ({ id: category })),
         },
       },
       include: {

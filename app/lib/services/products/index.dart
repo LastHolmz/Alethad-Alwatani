@@ -4,7 +4,7 @@ import 'package:e_commerce/constants/global_variables.dart';
 import 'package:e_commerce/models/product.dart';
 import 'package:http/http.dart';
 
-class ProductServices {
+class ProductService {
   // Future<String> createAssembleRequest(AssembleRequest assembleRequest) async {
   //   Uri uri = apiUri('requests/assemble');
   //   // final String token = await getStoredToken();
@@ -37,7 +37,7 @@ class ProductServices {
         return [];
       } else {
         final Map<String, dynamic> body = json.decode(response.body);
-        final List<dynamic> productsData = body["data"]["products"];
+        final List<dynamic> productsData = body["data"];
         final List<Product> products = productsData
             .map<Product>((product) => Product.fromJson(product))
             .toList();

@@ -1,11 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce/common/widgets/product_helpers.dart';
 import 'package:e_commerce/models/product.dart';
+import 'package:e_commerce/providers/products/index.dart';
 import 'package:e_commerce/services/products/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/image_slider.dart';
-import 'package:e_commerce/common/widgets/product_helpers.dart';
+// import 'package:e_commerce/common/widgets/product_helpers.dart';
 import 'package:e_commerce/constants/global_variables.dart';
+// import 'package:go_router/go_router.dart';
+
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,14 +57,15 @@ class _HomeScreenState extends State<HomeScreen>
   late TextEditingController _controller;
   late FocusNode _focusNode;
   int currentPageIndex = 0;
-  late Future<List<Product>> _products;
-  final ProductServices productServices = ProductServices();
+  final ProductService productServices = ProductService();
   @override
   void initState() {
-    Future.microtask(() => _products = productServices.getProducts(''));
     _controller = TextEditingController();
     _focusNode = FocusNode();
     super.initState();
+    Future.microtask(
+      () => context.read<ProductsProvider>().fetchProducts(),
+    );
   }
 
   @override
@@ -99,56 +105,62 @@ class _HomeScreenState extends State<HomeScreen>
         title: "افضل مبيعاتنا",
       ),
       const SizedBox(height: 10),
-      GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      Consumer<ProductsProvider>(
+        builder: (context, value, child) {
+          final bool onEnd = value.onEnd;
+          final bool isLoading = value.isLoading;
+          final List<Product> products = value.products;
+          final int listLength =
+              isLoading ? products.length + 25 : products.length + 1;
 
-        // itemCount: isLoading ? 25 : products.length,
-        itemCount: 8,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemBuilder: (context, index) {
-          // if (isLoading) {
-          //   return const Card.filled(
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.stretch,
-          //       children: [
-          //         Expanded(
-          //           flex: 3,
-          //           child: Skeleton(),
-          //         ),
-          //         SizedBox(
-          //           height: 20,
-          //         ),
-          //         Padding(
-          //           padding: EdgeInsets.all(10),
-          //           child: Skeleton(height: 8),
-          //         ),
-          //         Padding(
-          //           padding: EdgeInsets.all(10),
-          //           child: Skeleton(height: 8),
-          //         )
-          //       ],
-          //     ),
-          //   );
-          // } else {
-          //   return ResponsiveProductGridCard(
-          //     product: products[index],
-          //     longPressEvent: true,
-          //   );
-          // }
-          return ResponsiveProductGridCard(
-            product: Product(
-              title: "اسم المنتج",
-              image: HomeScreen.images[0],
-              price: 12,
-              id: '',
-              barcode: '',
-              createdAt: DateTime(2024),
-              updatedAt: null,
+          return GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
             ),
-            longPressEvent: true,
+
+            // itemCount: isLoading ? 25 : products.length,
+            itemCount: listLength,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemBuilder: (BuildContext context, int index) {
+              if (!isLoading || products.isNotEmpty) {
+                if (index < products.length) {
+                  final Product product = products[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: ResponsiveProductGridCard(product: product),
+                  );
+                } else {
+                  if (index < listLength - 1) {
+                    return const ProductSkeleton();
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: onEnd
+                          ? Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  // context.go(StoresPage.path);
+                                },
+                                icon: const Icon(Icons.arrow_back),
+                                label: const Text('المتاجر'),
+                              ),
+                            )
+                          : OutlinedButton(
+                              onPressed: () {
+                                value.fetchProductsOnScroll('teke=2');
+                              },
+                              child: const Text('اكثر'),
+                            ),
+                    );
+                  }
+                }
+              } else {
+                return const ProductSkeleton();
+              }
+            },
           );
         },
       ),
