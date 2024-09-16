@@ -16,6 +16,9 @@ import { toast } from "@/components/ui/use-toast";
 import NotFoundTable from "../../components/not-found-table";
 import Image from "next/image";
 import ReusableRow from "../../components/reusable-row";
+import { DeleteProductForm, UpdateProductForm } from "./forms";
+import { CustomLink } from "@/components/ui/custom-link";
+import Link from "next/link";
 
 export const productColumn: ColumnDef<Product>[] = [
   {
@@ -96,7 +99,7 @@ export const productColumn: ColumnDef<Product>[] = [
     header: "الأحداث",
     enableHiding: false,
     cell: ({ row }) => {
-      const order = row.original;
+      const product = row.original;
       return (
         <DropdownMenu dir="rtl">
           <DropdownMenuTrigger asChild>
@@ -107,10 +110,9 @@ export const productColumn: ColumnDef<Product>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>الأحداث</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(String(order.barcode));
+                navigator.clipboard.writeText(String(product.barcode));
                 toast({
                   className: "bg-primary text-white",
                   description: "تم نسخ الباركود بنجاح",
@@ -119,6 +121,20 @@ export const productColumn: ColumnDef<Product>[] = [
             >
               نسح الباركود
             </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                // variant={"ghost"}
+                className="w-full justify-around"
+                // size={"sm"}
+                href={`/dashboard/products/${product.id}/update`}
+              >
+                تحديث
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <DeleteProductForm product={product} />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
           </DropdownMenuContent>
         </DropdownMenu>
       );

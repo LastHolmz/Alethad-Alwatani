@@ -1,6 +1,6 @@
 "use client";
 import { toast } from "@/components/ui/use-toast";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -9,66 +9,63 @@ const initMessage: { message: string } = {
   message: "",
 };
 
-type action = (
+type Action = (
   prevState: { message: string },
   formData: FormData
 ) => Promise<{ message: string }>;
 
 interface Props {
-  action: action;
+  action: Action;
   className?: string;
   children: ReactNode;
-  sucess?: string;
+  success?: string;
   replaceLink?: string;
-  dir?: "ltr" | "rtl";
-  onSuccessEvent?: () => void;
-  stopReplacing?: boolean;
+  dontReplace?: boolean;
+  stopClosing?: boolean;
 }
+
 /**
- * @param {replaceLink} replaceLink is string will be redirected to, the default is "/" home page
- * {sucess} sucess is string msg that will be displayed when the action is successful
+ * Accessible form component with custom dialog, actions, and success handling.
+ *
+ * @param {Action} action - The async function to be called on form submission.
+ * @param {string} [className] - Optional class names for the form.
+ * @param {ReactNode} children - The form elements.
+ * @param {string} [success] - Message to display on successful action.
+ * @param {string} [replaceLink] - URL to navigate to after success. Defaults to "/".
+ * @param {boolean} [dontReplace=false] - Whether to prevent navigation on success.
+ * @param {boolean} [stopClosing=false] - Whether to prevent the dialog from closing automatically.
  */
 const Form = ({
-  className,
   action,
+  className,
   children,
+  success,
   replaceLink = "/",
-  sucess = "تمت العملية بنجاح",
-  dir = "rtl",
-  stopReplacing = false,
-  onSuccessEvent,
+
+  dontReplace = false,
+  stopClosing = false,
 }: Props) => {
   const router = useRouter();
-  const [msg, dispatch] = useFormState(action, initMessage);
-  useEffect(() => {
-    if (!msg.message || msg.message.length === 0) {
-      return;
-    } else {
-      toast({
-        title: msg.message,
-      });
-      if (sucess) {
-        if (msg.message === sucess) {
-          if (onSuccessEvent) {
-            onSuccessEvent();
-          }
-          if (stopReplacing) return;
-          router.replace(replaceLink);
-        }
-      } else {
-        if (msg.message === "تمت العملية بنجاح") {
-          if (onSuccessEvent) {
-            onSuccessEvent();
-          }
+  const [msg, dispatch] = useFormState(action, { message: "" });
+  const [open, setOpen] = useState<boolean>(false);
 
-          if (stopReplacing) return;
-          router.replace(replaceLink);
-        }
-      }
+  const toggleOpen = () => {
+    if (!stopClosing) setOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!msg.message) return;
+
+    toast({ title: msg.message });
+
+    if (msg.message === (success || "تمت العملية بنجاح")) {
+      if (!dontReplace) router.replace(replaceLink);
+      toggleOpen();
     }
-  }, [msg, router]);
+  }, [msg, success, replaceLink, dontReplace, router]);
+
   return (
-    <form dir={dir} action={dispatch} className={cn(className)}>
+    <form dir={"rtl"} action={dispatch} className={cn(className)}>
       {children}
     </form>
   );

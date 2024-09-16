@@ -64,8 +64,7 @@ export const createProduct = async (req: Request, res: Response) => {
     } = req.body;
     console.log(req.body);
     //need to be returned
-    // if (!title || !price || !skus || !image) {
-    if (!title || !price || !image) {
+    if (!title || !price || !sku || !image || !barcode) {
       return res.status(400).json({ message: "يجب ملء كل الحقول" });
     }
 
@@ -152,6 +151,7 @@ export const getProductById = async (req: Request, res: Response) => {
  * @returns {Error} 404 - Product not found
  * @returns {Error} 500 - Internal server error
  */
+
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -160,39 +160,56 @@ export const updateProduct = async (req: Request, res: Response) => {
       title,
       description,
       originalPrice,
-      skus,
-      brands,
-      categories,
+      barcode,
+      image,
+      sku,
+      brandIDs,
+      categoryIDs,
     }: {
-      price?: number;
-      title?: string;
-      description?: string;
+      price: number;
       originalPrice?: number;
-      skus?: Sku[];
-      brands?: string[];
-      categories?: string[];
+      title: string;
+      description?: string;
+      sku: Sku[];
+      brandIDs?: string[];
+      categoryIDs?: string[];
+      image: string;
+      barcode: string;
     } = req.body;
+
+    if (!title || !price || !sku || !image || !barcode) {
+      return res.status(400).json({ message: "يجب ملء كل الحقول" });
+    }
+
+    // Construct the data object for update
+    const updateData: any = {
+      price,
+      title,
+      description,
+      originalPrice,
+      barcode,
+      image,
+      brands: {
+        connect: brandIDs?.map((brand) => ({ id: brand })) || [],
+      },
+      categories: {
+        connect: categoryIDs?.map((category) => ({ id: category })) || [],
+      },
+    };
+
+    // Only include SKUs if the array is not empty
+    if (sku.length > 0) {
+      updateData.skus = {
+        deleteMany: {}, // Delete all existing SKUs (modify as needed)
+        createMany: {
+          data: sku,
+        },
+      };
+    }
 
     const product = await prisma.product.update({
       where: { id },
-      data: {
-        price,
-        title,
-        description,
-        originalPrice,
-        skus: {
-          deleteMany: {}, // Delete all existing SKUs (modify as needed)
-          createMany: {
-            data: skus || [],
-          },
-        },
-        brands: {
-          set: brands?.map((brand) => ({ id: brand })) || [],
-        },
-        categories: {
-          set: categories?.map((category) => ({ id: category })) || [],
-        },
-      },
+      data: updateData,
       include: {
         skus: true,
         brands: true,

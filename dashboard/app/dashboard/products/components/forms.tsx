@@ -18,7 +18,11 @@ import {
   ControlledImageDropzone,
   ImageDropzone,
 } from "../../components/dropzone";
-import { newProductAction } from "../new/actions";
+import {
+  deleteProductAction,
+  newProductAction,
+  updateProductAction,
+} from "../new/actions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResponsiveDialogWithCustomOpenFuncionality } from "../../components/responsive-dialog";
 import { PlusCircle, Trash2Icon } from "lucide-react";
@@ -30,6 +34,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Pencil1Icon } from "@radix-ui/react-icons";
+import AccessibleDialogForm from "../../components/accible-dialog-form";
 
 export const CheckCategories = ({
   data,
@@ -153,7 +158,7 @@ export const CheckBrands = ({
   );
 };
 
-export const CreatOrderForm = ({
+export const CreateProductForm = ({
   brands,
   categories,
 }: {
@@ -161,12 +166,7 @@ export const CreatOrderForm = ({
   categories: Category[];
 }) => {
   return (
-    <Form
-      action={newProductAction}
-      sucess="تمت العملية بنجاح"
-      replaceLink="/dashboard/offers"
-      className="mt-4 mb-2"
-    >
+    <Form action={newProductAction} className="mt-4 mb-2">
       <div className="grid gap-1 sm:gap-3 sm:grid-cols-2">
         <div>
           <Label htmlFor="title">اسم المنتج</Label>
@@ -226,68 +226,6 @@ export const CreatOrderForm = ({
           <Label htmlFor="brands">اختيار البراندات</Label>
           <CheckBrands data={brands} />
         </div>
-        {/* نوع المنتج
-        <div>
-          <Label htmlFor="type">نوع المنتج</Label>
-          <Select dir="rtl" name="type" defaultValue="main">
-            <SelectTrigger id="type" className="">
-              <SelectValue placeholder="اختر نوع المنتج" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>الأنواع</SelectLabel>
-                <SelectItem value="main">أساسية</SelectItem>
-                <SelectItem value="offer">عرض محدود</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div> */}
-        {/* توصية
-        <div>
-          <Label htmlFor="recommended">توصية</Label>
-          <Select dir="rtl" name="recommended" defaultValue="false">
-            <SelectTrigger id="recommended" className="">
-              <SelectValue placeholder="توصية" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>هل تريد توصيته للمستخدمين</SelectLabel>
-                <SelectItem value="true">نعم</SelectItem>
-                <SelectItem value="false">لا</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div> */}
-
-        {/* features
-        <div>
-          <div>
-            <Label htmlFor="features">مميزات المنتج</Label>
-            <Input
-              ref={inputRef}
-              id="features"
-              type={"text"}
-              placeholder="ادخل مميزات المنتج"
-              value={feature}
-              onChange={(e) => setFeature(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  addFeature(feature);
-                  e.preventDefault();
-                }
-              }}
-            />
-          </div>
-          <div className="flex min-h-20 my-2 justify-start bg-background border rounded-lg px-4 py-2 items-center flex-wrap">
-            {features?.map((feature, index) => (
-              <Feature
-                removeFeature={removeFeature}
-                value={feature}
-                key={index}
-              />
-            ))}
-          </div>
-        </div> */}
       </div>
       <div>
         <Colors />
@@ -592,5 +530,129 @@ export const Colors = ({
       </div>
       <Input type="hidden" name="skus" value={JSON.stringify(skus)} />
     </div>
+  );
+};
+
+export const UpdateProductForm = ({
+  brands,
+  categories,
+  product,
+}: {
+  brands: Brand[];
+  categories: Category[];
+  product: Product;
+}) => {
+  return (
+    <Form
+      action={updateProductAction}
+      success={"تم التحديث بنجاح"}
+      replaceLink="/dashboard/products"
+      className="mt-4 mb-2"
+    >
+      <div className="grid gap-1 sm:gap-3 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="title">اسم المنتج</Label>
+          <Input
+            id="title"
+            required
+            type={"text"}
+            name="title"
+            placeholder="ادخل اسم المنتج"
+            defaultValue={product.title}
+          />
+        </div>
+        <div>
+          <Label htmlFor="price">السعر</Label>
+          <Input
+            id="price"
+            required
+            type={"number"}
+            name="price"
+            placeholder="ادخل سعر المنتج"
+            defaultValue={product.price}
+          />
+        </div>
+        <div>
+          <Label htmlFor="barcode">الباركود</Label>
+          <Input
+            id="barcode"
+            required
+            type={"text"}
+            name="barcode"
+            placeholder="ادخل باركود المنتج"
+            defaultValue={product.barcode}
+          />
+        </div>
+        <div>
+          <Label htmlFor="originalPrice">السعر الأصلي</Label>
+          <Input
+            id="originalPrice"
+            required
+            type={"number"}
+            name="originalPrice"
+            placeholder="ادخل سعر المنتج الأصلي"
+            defaultValue={product?.originalPrice ?? 0}
+          />
+        </div>
+        <div>
+          <Label htmlFor="description">الوصف</Label>
+          <Input
+            id="description"
+            required
+            type={"text"}
+            name="description"
+            placeholder="ادخل وصف المنتج"
+            defaultValue={product?.description ?? ""}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="categories">اختيار الأصناف</Label>
+          <CheckCategories
+            defalutCategories={product.categoryIDs}
+            data={categories}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="brands">اختيار البراندات</Label>
+          <CheckBrands data={brands} defalutBrands={product.brandIDs} />
+        </div>
+      </div>
+      <div>
+        <Colors defaultSkus={product.sku} />
+      </div>
+      <div>
+        <ImageDropzone
+          name="image"
+          defautlImage={product.image}
+          title="صورة المنتج"
+        ></ImageDropzone>
+      </div>
+      <Input type="hidden" name="id" value={product.id} />
+      <SubmitButton className="w-full sm:w-1/4 mt-2" type={"submit"}>
+        تحديث
+      </SubmitButton>
+    </Form>
+  );
+};
+export const DeleteProductForm = ({ product }: { product: Product }) => {
+  return (
+    <AccessibleDialogForm
+      trigger={<button type="button">حذف المنتج</button>}
+      action={deleteProductAction}
+      dontReplace
+      stopClosing={false}
+      success={"تم الحذف بنجاح"}
+      className="mt-4 mb-2"
+      title={`هل تريد حذف ${product.title}`}
+    >
+      <Input type="hidden" name="id" value={product.id} />
+      <SubmitButton
+        className="w-full sm:w-1/4 mt-2"
+        type={"submit"}
+        variant={"secondary"}
+      >
+        حذف
+      </SubmitButton>
+    </AccessibleDialogForm>
   );
 };

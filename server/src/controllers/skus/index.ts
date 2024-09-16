@@ -138,3 +138,19 @@ export const getSkus = async (req: Request, res: Response) => {
     return res.status(500).json({ error, message: "حدث خطأ داخلي" });
   }
 };
+export const getSkuById = async (req: Request, res: Response) => {
+  try {
+    console.log("استدعاء getSkus ...");
+    const id = req.params.skuId;
+    console.log(req.params);
+    // console.log(skuId);
+    const skus = await prisma.sku.findMany({ where: { id } });
+    if (!skus) return res.json({ data: undefined });
+    return res.json({ data: skus });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ error, message: "حدث خطأ داخلي", data: undefined });
+  }
+};

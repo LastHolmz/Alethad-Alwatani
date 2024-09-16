@@ -1,4 +1,6 @@
-import DashboardHeader from "../../components/dashboard-header";
+import { getBrands, getCategories } from "@/app/db/categories";
+import { getProductById } from "@/app/db/products";
+import { notFound } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,11 +10,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { CreateProductForm } from "../components/forms";
-import { getBrands, getCategories } from "@/app/db/categories";
-const page = async () => {
+import DashboardHeader from "@/app/dashboard/components/dashboard-header";
+import { UpdateProductForm } from "../../components/forms";
+const page = async ({ params }: { params: { productId: string } }) => {
+  const product = await getProductById(params.productId);
   const categories = await getCategories();
   const brands = await getBrands();
+
+  if (!product) {
+    return notFound();
+  }
   return (
     <main>
       <DashboardHeader>
@@ -37,13 +44,17 @@ const page = async () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>منتج جديد</BreadcrumbPage>
+              <BreadcrumbPage>تحديث {product.title}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </DashboardHeader>
       <div className="container">
-        <CreateProductForm categories={categories} brands={brands} />
+        <UpdateProductForm
+          product={product}
+          categories={categories}
+          brands={brands}
+        />
       </div>
     </main>
   );

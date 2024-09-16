@@ -45,3 +45,71 @@ export const createProduct = async ({
     return { message: "حدث خطأ" };
   }
 };
+export const updateProduct = async ({
+  product,
+}: {
+  product: Omit<Product, "createdAt" | "updatedAt">;
+}): Promise<{ message: string }> => {
+  try {
+    const res = await fetch(`${uri}/products/${product.id}`, {
+      method: "PUT",
+      body: JSON.stringify(product),
+      headers: {
+        "Content-Type": "application/json", // Add the Content-Type header
+      },
+    });
+
+    const data: { data: Product; message: string } = await res.json();
+
+    if (!data) {
+      return { message: "حدث خطأ أثناء إنشاء المنتج" };
+    }
+
+    revalidateTag("products");
+
+    return { message: data.message };
+  } catch (error) {
+    return { message: "حدث خطأ" };
+  }
+};
+export const deleteProduct = async ({
+  id,
+}: {
+  id: string;
+}): Promise<{ message: string }> => {
+  try {
+    const res = await fetch(`${uri}/products/${id}`, {
+      method: "DELETE",
+      // body: JSON.stringify(product),
+      headers: {
+        "Content-Type": "application/json", // Add the Content-Type header
+      },
+    });
+
+    const data: { data: Product; message: string } = await res.json();
+
+    if (!data) {
+      return { message: "حدث خطأ أثناء إنشاء المنتج" };
+    }
+
+    revalidateTag("products");
+
+    return { message: data.message };
+  } catch (error) {
+    return { message: "حدث خطأ" };
+  }
+};
+
+export const getProductById = async (id: string) => {
+  try {
+    const res = await fetch(`${uri}/products/${id}`);
+    const data: { data: Product } = await res.json();
+    if (!data) {
+      return undefined;
+    }
+    return data.data;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+};
