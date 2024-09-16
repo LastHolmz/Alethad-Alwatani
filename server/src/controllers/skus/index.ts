@@ -18,13 +18,13 @@ export const createNewSku = async (req: Request, res: Response) => {
       qty,
       hashedColor,
       nameOfColor,
-      size,
+      // size,
       image,
     }: {
       qty: number;
       hashedColor?: string;
       nameOfColor?: string;
-      size: string;
+      // size: string;
       image?: string;
     } = req.body;
 
@@ -33,7 +33,7 @@ export const createNewSku = async (req: Request, res: Response) => {
         qty,
         hashedColor,
         nameOfColor,
-        size,
+        // size,
         image,
         Product: {
           connect: { id: productId },
@@ -66,13 +66,13 @@ export const updateSku = async (req: Request, res: Response) => {
       qty,
       hashedColor,
       nameOfColor,
-      size,
+      // size,
       image,
     }: {
       qty?: number;
       hashedColor?: string;
       nameOfColor?: string;
-      size?: string;
+      // size?: string;
       image?: string;
     } = req.body;
 
@@ -82,7 +82,7 @@ export const updateSku = async (req: Request, res: Response) => {
         qty,
         hashedColor,
         nameOfColor,
-        size,
+        // size,
         image,
       },
     });

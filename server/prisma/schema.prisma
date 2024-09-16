@@ -67,7 +67,7 @@ model Sku {
   qty         Int      @default(0)
   hashedColor String?  @default("#000")
   nameOfColor String?  @default("بلا")
-  size        String
+  // size        String
   image       String?
   Product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId   String?  @db.ObjectId

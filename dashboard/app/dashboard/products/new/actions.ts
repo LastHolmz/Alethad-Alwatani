@@ -17,6 +17,7 @@ export async function newProductAction(
       barcode: z.string(),
       categoryIDs: z.string(),
       brandIDs: z.string(),
+      skus: z.string(),
     });
     console.log(`schema: ${schema}`);
 
@@ -29,6 +30,7 @@ export async function newProductAction(
       barcode: formData.get("barcode"),
       categoryIDs: formData.get("categoryIDs"),
       brandIDs: formData.get("brandIDs"),
+      skus: formData.get("skus"),
     });
     console.log(data);
     console.log(data.success);
@@ -44,7 +46,8 @@ export async function newProductAction(
       ? data.data.categoryIDs.split(",")
       : [];
     const brandIDs = data.data?.brandIDs ? data.data.brandIDs.split(",") : [];
-
+    const skus: ColorDetails[] = JSON.parse(data.data.skus);
+    console.log(skus);
     const newProduct = await createProduct({
       product: {
         description,
@@ -55,7 +58,7 @@ export async function newProductAction(
         barcode,
         brandIDs,
         categoryIDs,
-        sku: [],
+        sku: skus,
       },
     });
     return { message: newProduct.message };

@@ -14,9 +14,22 @@ import Form from "@/app/dashboard/components/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import SubmitButton from "@/app/dashboard/components/custom-submit-btn";
-import { ImageDropzone } from "../../components/dropzone";
+import {
+  ControlledImageDropzone,
+  ImageDropzone,
+} from "../../components/dropzone";
 import { newProductAction } from "../new/actions";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ResponsiveDialogWithCustomOpenFuncionality } from "../../components/responsive-dialog";
+import { PlusCircle, Trash2Icon } from "lucide-react";
+import { convertToHex } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Pencil1Icon } from "@radix-ui/react-icons";
 
 export const CheckCategories = ({
   data,
@@ -213,7 +226,6 @@ export const CreatOrderForm = ({
           <Label htmlFor="brands">اختيار البراندات</Label>
           <CheckBrands data={brands} />
         </div>
-
         {/* نوع المنتج
         <div>
           <Label htmlFor="type">نوع المنتج</Label>
@@ -278,11 +290,307 @@ export const CreatOrderForm = ({
         </div> */}
       </div>
       <div>
+        <Colors />
+      </div>
+      <div>
         <ImageDropzone name="image" title="صورة المنتج"></ImageDropzone>
       </div>
       <SubmitButton className="w-full sm:w-1/4 mt-2" type={"submit"}>
         حفظ
       </SubmitButton>
     </Form>
+  );
+};
+
+export const Colors = ({
+  defaultSkus = [],
+}: {
+  defaultSkus?: Omit<ColorDetails, "id" | "productId">[];
+}) => {
+  const [skus, setSkus] =
+    useState<Omit<ColorDetails, "id" | "productId">[]>(defaultSkus);
+  const [poster, setPoster] = useState("");
+  const [currentColor, setCurrentColor] = useState<
+    Omit<ColorDetails, "id" | "productId">
+  >({
+    hashedColor: "#ff5733",
+    nameOfColor: "",
+    qty: 0,
+    image: poster,
+  });
+  const [hexColor, setHexColor] = useState<string>("#ff5733");
+  const [newOpen, setNewOpen] = useState<boolean>(false);
+  const [updateOpen, setUpdateOpen] = useState<boolean>(false);
+  const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const colorValue = e.target.value;
+    const convertedHex = convertToHex(colorValue);
+    if (convertedHex) {
+      setHexColor(convertedHex);
+      setCurrentColor((prev) => ({ ...prev, hashedColor: convertedHex }));
+    } else {
+      console.error("Invalid color format");
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentColor((prev) => ({ ...prev, nameOfColor: e.target.value }));
+  };
+
+  const handleQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentColor((prev) => ({ ...prev, qty: Number(e.target.value) }));
+  };
+  const handleImageChange = (val: string) => {
+    console.log(val);
+    setCurrentColor((prev) => ({ ...prev, image: val }));
+  };
+
+  const toggleSkus = () => {
+    const existingSkuIndex = skus.findIndex(
+      (sku) =>
+        sku.hashedColor === currentColor.hashedColor &&
+        sku.nameOfColor === currentColor.nameOfColor
+    );
+
+    if (existingSkuIndex > -1) {
+      setSkus((prev) => prev.filter((_, index) => index !== existingSkuIndex));
+    } else {
+      setSkus((prev) => [...prev, currentColor]);
+    }
+    setNewOpen(!newOpen);
+  };
+  const updateSku = (
+    oldSku: Omit<ColorDetails, "id" | "productId">,
+    newSku: Omit<ColorDetails, "id" | "productId">
+  ): void => {
+    setSkus((prev) =>
+      prev.map((item) =>
+        item.hashedColor === oldSku.hashedColor &&
+        item.nameOfColor === oldSku.nameOfColor
+          ? { ...item, ...newSku }
+          : item
+      )
+    );
+    setUpdateOpen(!updateOpen);
+  };
+
+  const deleteSku = (
+    skuToDelete: Omit<ColorDetails, "id" | "productId">
+  ): void => {
+    setSkus((prev) =>
+      prev.filter(
+        (sku) =>
+          !(
+            sku.hashedColor === skuToDelete.hashedColor &&
+            sku.nameOfColor === skuToDelete.nameOfColor
+          )
+      )
+    );
+    setDeleteOpen(!deleteOpen);
+  };
+
+  useEffect(() => {
+    handleImageChange(poster);
+    console.log(skus);
+  }, [poster, skus]);
+
+  return (
+    <div className="my-2">
+      <div className="flex justify-between items-center my-2">
+        <Label htmlFor="color">الألوان و الكميات</Label>
+        <ResponsiveDialogWithCustomOpenFuncionality
+          open={newOpen}
+          setOpen={setNewOpen}
+          trigger={
+            <Button type="button" size={"icon"}>
+              <PlusCircle />
+            </Button>
+          }
+          title="إضافة لون جديد مع كميته"
+        >
+          <div className="grid gap-1 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="nameOfColor">اسم اللون</Label>
+                <Input
+                  id="nameOfColor"
+                  required
+                  type="text"
+                  name="nameOfColor"
+                  placeholder="ادخل اسم اللون"
+                  value={currentColor.nameOfColor}
+                  onChange={handleNameChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="hashedColor">اختيار اللون</Label>
+                <Input
+                  id="hashedColor"
+                  required
+                  type="color"
+                  name="hashedColor"
+                  value={hexColor}
+                  onChange={handleColorChange}
+                  placeholder="اختر اللون"
+                />
+              </div>
+            </div>
+            <Separator />
+            <div>
+              <Label htmlFor="qty">الكمية</Label>
+              <Input
+                id="qty"
+                required
+                type="number"
+                name="qty"
+                placeholder="ادخل الكمية"
+                value={currentColor.qty}
+                onChange={handleQtyChange}
+              />
+            </div>
+            <div>
+              <ControlledImageDropzone
+                setPoster={setPoster}
+                poster={poster}
+                name="image"
+                className="sm:w-full"
+                title="صورة المنتج باللون المعين"
+              />
+            </div>
+            <Button onClick={toggleSkus} type="button">
+              إضافة
+            </Button>
+          </div>
+        </ResponsiveDialogWithCustomOpenFuncionality>
+      </div>
+      <div
+        id="color"
+        className="w-full min-h-[200px] rounded border px-2 flex justify-start items-center flex-wrap gap-1"
+      >
+        {skus.map((sku, i) => (
+          <HoverCard key={i}>
+            <HoverCardTrigger>
+              {" "}
+              <div className="flex transition-all flex-col items-center shadow px-4 py-1 rounded-md hover:bg-secondary cursor-pointer hover:shadow-md">
+                <div
+                  className="rounded-full w-10 h-10"
+                  style={{
+                    backgroundColor: sku.hashedColor,
+                  }}
+                ></div>
+                <span>{sku.nameOfColor}</span>
+                <span>{sku.qty}</span>
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className=" flex w-fit gap-1 items-center px-2 py-1 rounded-md">
+              <ResponsiveDialogWithCustomOpenFuncionality
+                open={updateOpen}
+                setOpen={setUpdateOpen}
+                trigger={
+                  <Button
+                    variant={"secondary"}
+                    onClick={() => {
+                      // Set current color and update hexColor
+                      setPoster(sku.image ?? poster);
+                      setCurrentColor({
+                        hashedColor: sku.hashedColor,
+                        nameOfColor: sku.nameOfColor,
+                        qty: sku.qty,
+                        image: sku.image,
+                      });
+                      setHexColor(sku.hashedColor ?? "");
+                    }}
+                    type="button"
+                    size={"icon"}
+                  >
+                    <Pencil1Icon />
+                  </Button>
+                }
+                title={`تعديل اللون: ${sku?.nameOfColor}`}
+              >
+                <div className="grid gap-1 sm:gap-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="nameOfColor">اسم اللون</Label>
+                      <Input
+                        id="nameOfColor"
+                        required
+                        type="text"
+                        name="nameOfColor"
+                        placeholder="ادخل اسم اللون"
+                        value={currentColor.nameOfColor}
+                        onChange={handleNameChange}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="hashedColor">اختيار اللون</Label>
+                      <Input
+                        id="hashedColor"
+                        required
+                        type="color"
+                        name="hashedColor"
+                        value={hexColor}
+                        onChange={handleColorChange}
+                        placeholder="اختر اللون"
+                      />
+                    </div>
+                  </div>
+                  <Separator />
+                  <div>
+                    <Label htmlFor="qty">الكمية</Label>
+                    <Input
+                      id="qty"
+                      required
+                      type="number"
+                      name="qty"
+                      placeholder="ادخل الكمية"
+                      value={currentColor.qty}
+                      onChange={handleQtyChange}
+                    />
+                  </div>
+                  <div>
+                    <ControlledImageDropzone
+                      setPoster={setPoster}
+                      poster={poster}
+                      name="image"
+                      className="sm:w-full"
+                      title="صورة المنتج باللون المعين"
+                    />
+                  </div>
+                  <Button
+                    onClick={() => {
+                      updateSku(sku, currentColor);
+                    }}
+                    type="button"
+                  >
+                    تحديث{" "}
+                  </Button>
+                </div>
+              </ResponsiveDialogWithCustomOpenFuncionality>
+              <ResponsiveDialogWithCustomOpenFuncionality
+                open={deleteOpen}
+                setOpen={setDeleteOpen}
+                trigger={
+                  <Button variant={"secondary"} type="button" size={"icon"}>
+                    <Trash2Icon className="w-4 h-4" />
+                  </Button>
+                }
+                title={`حذف اللون: ${sku?.nameOfColor}`}
+              >
+                <Button
+                  onClick={() => {
+                    deleteSku(sku);
+                  }}
+                  type={"button"}
+                >
+                  حذف
+                </Button>
+              </ResponsiveDialogWithCustomOpenFuncionality>
+            </HoverCardContent>
+          </HoverCard>
+        ))}
+      </div>
+      <Input type="hidden" name="skus" value={JSON.stringify(skus)} />
+    </div>
   );
 };

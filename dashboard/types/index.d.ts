@@ -41,7 +41,7 @@ declare interface ColorDetails {
   qty: number; // Corresponding to qty Int
   hashedColor?: string; // Corresponding to hashedColor String?
   nameOfColor?: string; // Corresponding to nameOfColor String?
-  size: string; // Corresponding to size String
+  // size: string; // Corresponding to size String
   image?: string; // Corresponding to image String?
   product?: Product; // Corresponding to Product? relation
   productId?: string; // Corresponding to productId @db.ObjectId

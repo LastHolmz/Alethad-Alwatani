@@ -46,7 +46,7 @@ export const createProduct = async (req: Request, res: Response) => {
       title,
       description,
       originalPrice,
-      skus,
+      sku,
       brandIDs,
       categoryIDs,
       image,
@@ -56,7 +56,7 @@ export const createProduct = async (req: Request, res: Response) => {
       originalPrice?: number;
       title: string;
       description?: string;
-      skus: Sku[];
+      sku: Sku[];
       brandIDs?: string[];
       categoryIDs?: string[];
       image: string;
@@ -82,7 +82,7 @@ export const createProduct = async (req: Request, res: Response) => {
           "https://images.unsplash.com/photo-1720048169970-9c651cf17ccd?q=80&w=1914&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         skus: {
           createMany: {
-            data: skus,
+            data: sku,
           },
         },
         brands: {
