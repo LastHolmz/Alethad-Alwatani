@@ -5,29 +5,6 @@ import 'package:e_commerce/models/product.dart';
 import 'package:http/http.dart';
 
 class ProductService {
-  // Future<String> createAssembleRequest(AssembleRequest assembleRequest) async {
-  //   Uri uri = apiUri('requests/assemble');
-  //   // final String token = await getStoredToken();
-  //   final response = await http.post(
-  //     uri,
-  //     headers: headers(token),
-  //     body: json.encode(assembleRequest.toJson()),
-  //   );
-  //   final Map<String, dynamic> body = json.decode(response.body);
-
-  //   try {
-  //     if (body["success"]) {
-  //       final String msg = body["data"]["message"];
-  //       return msg;
-  //     } else {
-  //       final String msg = body["message"];
-  //       return msg;
-  //     }
-  //   } catch (e) {
-  //     return 'تمت العملية';
-  //   }
-  // }
-
   Future<List<Product>> getProducts(String? params) async {
     try {
       final Uri uri = apiUri('products');
@@ -46,6 +23,24 @@ class ProductService {
       }
     } catch (e) {
       return [];
+    }
+  }
+
+  Future<Product?> getProductById(String id) async {
+    try {
+      final Uri uri = apiUri('products/$id');
+      final token = await getStoredToken();
+      final response = await get(uri, headers: headers(token));
+      if (response.statusCode != 200) {
+        return null;
+      } else {
+        final Map<String, dynamic> body = json.decode(response.body);
+        final dynamic productsData = body["data"];
+        final Product product = Product.fromJson(productsData);
+        return product;
+      }
+    } catch (e) {
+      return null;
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:e_commerce/constants/global_variables.dart';
+import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/product.dart';
+import 'package:e_commerce/services/categories/index.dart';
 import 'package:e_commerce/services/products/index.dart';
 import 'package:flutter/cupertino.dart';
 // import 'package:kraken_app/common/service/product.dart';
@@ -12,36 +14,32 @@ import 'package:flutter/cupertino.dart';
 
 enum Sort { asc, desc }
 
-// class CategoriesProvider extends ChangeNotifier {
-//   final CategoryServices _categoryServices = CategoryServices();
-//   List<Category> _categories = [];
+class CategoriesProvider extends ChangeNotifier {
+  final CategoryService _categoryServices = CategoryService();
+  List<Category> _categories = [];
 
-//   List<Category> get categories => _categories;
+  List<Category> get categories => _categories;
 
-//   bool _isLoading = false;
-//   bool get isLoading => _isLoading;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-//   Future<void> fetchCategories() async {
-//     if (_isLoading) return;
-//     // if (categories.isNotEmpty) return;
-
-//     _isLoading = true;
-//     notifyListeners();
-//     try {
-//       var result = await _categoryServices.fetchCategories('main=true');
-
-//       // ignore: unnecessary_null_comparison
-//       if (result != null) {
-//         _categories = result;
-//       }
-//     } catch (e) {
-//       _categories = [];
-//     } finally {
-//       _isLoading = false;
-//       notifyListeners();
-//     }
-//   }
-// }
+  Future<void> fetchCategories() async {
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await _categoryServices.getCategories('');
+      _categories = result;
+    } catch (e) {
+      _categories = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
 
 /// [ProductsProvider] The products will be showed in home page
 class ProductsProvider extends ChangeNotifier {

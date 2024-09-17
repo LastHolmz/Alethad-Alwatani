@@ -8,14 +8,20 @@ part of 'brand.dart';
 
 Brand _$BrandFromJson(Map<String, dynamic> json) => Brand(
       id: json['id'] as String,
-      productId: json['productId'] as String?,
+      productIDs: (json['productIDs'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       title: json['title'] as String,
-      categoryId: json['categoryId'] as String?,
+      categories: (json['categories'] as List<dynamic>?)
+          ?.map((e) => Category.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$BrandToJson(Brand instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'productId': instance.productId,
-      'categoryId': instance.categoryId,
+      'productIDs': instance.productIDs,
+      'categories': instance.categories?.map((e) => e.toJson()).toList(),
+      'image': instance.image,
     };

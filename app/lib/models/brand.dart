@@ -1,4 +1,5 @@
 // ignore: depend_on_referenced_packages
+import 'package:e_commerce/models/category.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 /// This allows the `User` class to access private members in
@@ -13,11 +14,16 @@ part 'brand.g.dart';
 class Brand {
   final String id;
   final String title;
-  final String? productId;
-  final String? categoryId;
+  final List<String>? productIDs;
+  final List<Category>? categories;
+  final String? image;
 
   Brand(
-      {required this.id, this.productId, required this.title, this.categoryId});
+      {required this.id,
+      this.productIDs,
+      required this.title,
+      this.categories,
+      this.image});
   factory Brand.fromJson(Map<String, dynamic> json) => _$BrandFromJson(json);
   Map<String, dynamic> toJson() => _$BrandToJson(this);
 }

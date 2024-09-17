@@ -11,7 +11,6 @@ Sku _$SkuFromJson(Map<String, dynamic> json) => Sku(
       qty: (json['qty'] as num).toDouble(),
       hashedColor: json['hashedColor'] as String?,
       nameOfColor: json['nameOfColor'] as String?,
-      size: json['size'] as String,
       productId: json['productId'] as String?,
       image: json['image'] as String?,
     );
@@ -21,7 +20,6 @@ Map<String, dynamic> _$SkuToJson(Sku instance) => <String, dynamic>{
       'qty': instance.qty,
       'hashedColor': instance.hashedColor,
       'nameOfColor': instance.nameOfColor,
-      'size': instance.size,
       'productId': instance.productId,
       'image': instance.image,
     };

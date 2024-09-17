@@ -15,7 +15,6 @@ class Sku {
   final double qty;
   final String? hashedColor;
   final String? nameOfColor;
-  final String size;
   final String? productId;
   final String? image;
 
@@ -24,7 +23,6 @@ class Sku {
       required this.qty,
       required this.hashedColor,
       required this.nameOfColor,
-      required this.size,
       required this.productId,
       required this.image});
   factory Sku.fromJson(Map<String, dynamic> json) => _$SkuFromJson(json);

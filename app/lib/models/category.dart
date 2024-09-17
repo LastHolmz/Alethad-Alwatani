@@ -14,11 +14,19 @@ part 'category.g.dart';
 class Category {
   final String id;
   final String title;
-  final String? productId;
+  final List<String>? productIDs;
+  final bool main;
+  final String? image;
   final List<Brand>? brands;
 
-  Category(
-      {required this.id, this.productId, required this.title, this.brands});
+  Category({
+    required this.id,
+    this.productIDs,
+    required this.title,
+    this.brands,
+    required this.main,
+    this.image,
+  });
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);
   Map<String, dynamic> toJson() => _$CategoryToJson(this);

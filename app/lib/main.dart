@@ -1,6 +1,6 @@
 import 'package:e_commerce/providers/products/index.dart';
+import 'package:e_commerce/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:e_commerce/screens/home/index.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -9,6 +9,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (context) => ProductsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CategoriesProvider(),
         )
       ],
       child: const App(),
@@ -19,17 +22,16 @@ void main() async {
 class App extends StatelessWidget {
   const App({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'e-commerce',
       // debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      routerConfig: router,
     );
   }
 }

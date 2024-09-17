@@ -28,8 +28,8 @@ app.use(json()); // application/json
 
 app.get("/", async (req, res) => {
   try {
-    await prisma.user.deleteMany();
-    res.json({ message: "done" });
+    // await prisma.user.deleteMany();
+    res.json({ message: "welcome 😊" });
   } catch (error) {
     console.log(error);
     res.json(error);
