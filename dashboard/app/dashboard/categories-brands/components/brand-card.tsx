@@ -23,11 +23,24 @@ const BrandCard = ({
       <HoverCardContent className="w-60 mx-auto">
         <div className="grid gap-1 px-1 py-0.5">
           <DeleteBrandForm
-            brand={{ categoryIDs, id, title, categories, image }}
+            brand={{
+              categoryIDs,
+              id,
+              title,
+              categories,
+              image,
+              productIDs: [],
+            }}
           />
           <UpdateBrandForm
-            brand={{ categoryIDs, id, title, categories, image }}
-            data={[]}
+            brand={{
+              categoryIDs,
+              id,
+              title,
+              categories,
+              image,
+              productIDs: [],
+            }}
           />
         </div>
       </HoverCardContent>

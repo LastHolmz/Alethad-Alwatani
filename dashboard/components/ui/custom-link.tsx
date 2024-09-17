@@ -48,11 +48,11 @@ export interface CustomLinkProps
 
 // Define the CustomLink component
 const CustomLink = React.forwardRef<HTMLAnchorElement, CustomLinkProps>(
-  ({ className, variant, size, asChild = false, href, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : Link;
     return (
       <Comp
-        href={href} // Explicitly pass href as a string
+        // Explicitly pass href as a string
         className={cn(linkVariants({ variant, size, className }))}
         ref={ref}
         {...props}

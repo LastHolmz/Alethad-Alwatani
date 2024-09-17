@@ -245,10 +245,7 @@ export const DeleteBrandForm = ({ brand }: { brand: Brand }) => {
 };
 
 export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
-  const [categories, setCategories] = useLocalStorage<Category[]>(
-    "categories",
-    []
-  );
+  const [categories, _] = useLocalStorage<Category[]>("categories", []);
   return (
     <AccssibleDialogForm
       success="تم الإنشاء بنجاح"

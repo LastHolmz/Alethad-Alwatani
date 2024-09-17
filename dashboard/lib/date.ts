@@ -6,7 +6,7 @@ interface MyDocument {
 
 // Example function to parse the dateTime field
 export function parseDateTime(doc: MyDocument): string {
-  let unknown = doc.unknownMsg ?? "غير معروف";
+  const unknown = doc.unknownMsg ?? "غير معروف";
   console.log(doc.dateTime);
   // console.log(doc.dateTime);
   if (!(doc.dateTime instanceof Date)) {
