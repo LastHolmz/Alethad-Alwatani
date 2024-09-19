@@ -9,22 +9,14 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { revalidateTag } from "next/cache";
 import { getCategories } from "@/app/db/categories";
 import CategoryTable from "../components/reusable-table";
 import categroyColumn from "./components/columns";
-import {
-  NewBrandForm,
-  NewCategoryForm,
-  UpdateCategories,
-} from "./components/forms";
+import { NewBrandForm, NewCategoryForm } from "./components/forms";
+import UpdateDataToLocalStorage from "./components/update-categories";
 
 const page = async () => {
-  // revalidateTag("products");
-  // console.log("fixxess");
-  // console.log(env.UPLOADTHING_APP_ID);
   const categories = await getCategories();
-  // console.log(categories[0].brands);
   return (
     <main>
       <DashboardHeader>
@@ -48,7 +40,6 @@ const page = async () => {
           </BreadcrumbList>
         </Breadcrumb>
       </DashboardHeader>
-      <UpdateCategories data={categories} />
       <div className=" my-4 container">
         <div className="">
           <Suspense fallback={"جاري التحميل"}>
@@ -71,6 +62,7 @@ const page = async () => {
           </Suspense>
         </div>
       </div>
+      <UpdateDataToLocalStorage data={categories} key={"categories"} />
     </main>
   );
 };

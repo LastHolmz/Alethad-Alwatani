@@ -289,12 +289,12 @@ export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
   );
 };
 
-export const UpdateCategories = ({ data }: { data: Category[] }) => {
-  const [_, setCategories] = useLocalStorage("categories", data);
+// export const UpdateCategories = ({ data }: { data: Category[] }) => {
+//   const [_, setCategories] = useLocalStorage("categories", data);
 
-  useEffect(() => {
-    setCategories(data);
-  }, [data]);
+//   useEffect(() => {
+//     setCategories(data);
+//   }, [data]);
 
-  return null;
-};
+//   return null;
+// };
