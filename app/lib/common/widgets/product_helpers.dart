@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/models/product.dart';
+import 'package:e_commerce/screens/products/id/index.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/constants/global_variables.dart';
@@ -84,7 +85,16 @@ class ProductCard extends StatelessWidget {
                       ],
                     ),
                     IconButton.filled(
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          showDragHandle: false,
+                          backgroundColor: Colors.transparent,
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) => buildAddToCartSheet(
+                              context: context, product: product),
+                        );
+                      },
                       icon: const Icon(
                         Icons.add_outlined,
                         color: Colors.white,

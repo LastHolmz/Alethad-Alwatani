@@ -71,12 +71,12 @@ class _ProductDetailsState extends State<ProductDetails> {
             child: FilledButton(
               onPressed: () {
                 showModalBottomSheet(
-                  showDragHandle: true,
+                  showDragHandle: false,
                   backgroundColor: Colors.transparent,
                   isScrollControlled: true,
                   context: context,
                   builder: (context) => product != null
-                      ? buildSheet()
+                      ? buildAddToCartSheet(context: context, product: product!)
                       : Container(), // Prevent showing bottom sheet if product is null
                 );
               },
@@ -89,7 +89,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                 : Text(product?.title ?? "لا يوجد منتج"),
             centerTitle: true,
           ),
-          body: product == null
+          body: product == null && !loading
               ? const Center(
                   child: Text('يرجى التأكد من اتصالك بالإنترنت'),
                 )
@@ -211,28 +211,33 @@ class _ProductDetailsState extends State<ProductDetails> {
       ),
     );
   }
-
-  Widget makeDismissible({required Widget child}) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => context.pop(),
-        child: GestureDetector(
-          onTap: () => {},
-          child: child,
-        ),
-      );
-
-  Widget buildSheet() => makeDismissible(
-        child: skusSheetContent(context: context, product: product!),
-      );
 }
+
+Widget makeDismissible(
+        {required Widget child, required BuildContext context}) =>
+    GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => context.pop(),
+      child: GestureDetector(
+        onTap: () => {},
+        child: child,
+      ),
+    );
+
+Widget buildAddToCartSheet(
+        {required BuildContext context, required Product product}) =>
+    makeDismissible(
+      context: context,
+      child: skusSheetContent(
+        product: product,
+      ),
+    );
 
 class skusSheetContent extends StatefulWidget {
   const skusSheetContent({
     super.key,
-    required this.context,
     required this.product,
   });
-  final BuildContext context;
   final Product product;
 
   @override
@@ -311,40 +316,56 @@ class _skusSheetContentState extends State<skusSheetContent> {
                               final cartItem = createCartItemsForProduct(
                                   widget.product.skus)[index];
 
-                              return ListTile(
-                                contentPadding: const EdgeInsets.all(0),
-                                subtitle: Row(
-                                  children: [
-                                    Text(
-                                      'المتوفر: ${cartItem.qty} |  ${cartItem.nameOfColor} | ',
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
+                              return Consumer<CartProvider>(
+                                builder: (context, value, child) {
+                                  final cart = value;
+                                  final currentCartItem = cart
+                                      .returnCurrentCartItem(cartItem.skuId);
+                                  return ListTile(
+                                    isThreeLine: true,
+                                    contentPadding: const EdgeInsets.all(0),
+                                    subtitle: Row(
+                                      children: [
+                                        Text(
+                                          'المتوفر: ${cartItem.qty} |  ${cartItem.nameOfColor} | ',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: ColorCircle(
+                                            color: getColorFromHex(
+                                              cartItem.hashedColor,
+                                            ),
+                                            width: 18,
+                                            height: 18,
+                                            radius: 2,
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            cartItem.skuImage ?? cartItem.image,
+                                        fit: BoxFit.cover,
+                                        width: 60,
+                                        height: 80,
                                       ),
-                                      child: ColorCircle(
-                                        color: getColorFromHex(
-                                            cartItem.hashedColor),
-                                        width: 18,
-                                        height: 18,
-                                        radius: 2,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        cartItem.skuImage ?? cartItem.image,
-                                    fit: BoxFit.cover,
-                                    width: 60,
-                                    height: 80,
-                                  ),
-                                ),
-                                title: Text(cartItem.title),
+                                    ),
+                                    titleAlignment:
+                                        ListTileTitleAlignment.threeLine,
+                                    title: Text(cartItem.title),
+                                    trailing: ControllProductQty(
+                                      cartItem: cartItem,
+                                      cart: cart,
+                                      currentCartItem: currentCartItem,
+                                    ),
+                                  );
+                                },
                               );
                             },
                           ),
@@ -355,6 +376,80 @@ class _skusSheetContentState extends State<skusSheetContent> {
           },
         ),
       ),
+    );
+  }
+}
+
+class ControllProductQty extends StatelessWidget {
+  const ControllProductQty({
+    super.key,
+    required this.cartItem,
+    required this.cart,
+    required this.currentCartItem,
+  });
+
+  final CartItem cartItem;
+  final CartProvider cart;
+  final CartItem? currentCartItem;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: currentCartItem == null
+          ? FilledButton(
+              onPressed: () {
+                cartItem.incrementQty(cartItem.maxQty);
+                cart.addNewToCart(cartItem);
+              },
+              child: const Text("أضف"))
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                      ? null
+                      : () {
+                          cart.addQtyToExistedCartItem(
+                            cartItem.skuId,
+                            null,
+                            context,
+                          );
+                        },
+                  icon: Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(
+                          cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                              ? 0.4
+                              : 1,
+                        ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    "${currentCartItem?.qty}",
+                  ),
+                ),
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () {
+                    cart.removeOne(cartItem.skuId, null);
+                  },
+                  icon: Icon(
+                    Icons.remove,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

@@ -3,14 +3,8 @@
 import useLocalStorage from "use-local-storage";
 import { useEffect } from "react";
 
-function UpdateDataToLocalStorage<T>({
-  data,
-  key,
-}: {
-  data: Category[];
-  key: string;
-}) {
-  const [_, setCategories] = useLocalStorage<typeof data>(key, data);
+function UpdateDataToLocalStorage<T>({ data, key }: { data: T; key: string }) {
+  const [_, setCategories] = useLocalStorage<T>(key, data);
 
   useEffect(() => {
     setCategories(data);
