@@ -4,12 +4,9 @@ import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/product.dart';
 import 'package:e_commerce/providers/products/index.dart';
-import 'package:e_commerce/services/products/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/image_slider.dart';
-import 'package:e_commerce/constants/global_variables.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
@@ -28,22 +25,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
-  // bool _isGrid = false;
   late TextEditingController _controller;
   late FocusNode _focusNode;
   int currentPageIndex = 0;
-  final ProductService productServices = ProductService();
   @override
   void initState() {
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    super.initState();
     Future.microtask(
       () => context.read<ProductsProvider>().fetchProducts(),
     );
     Future.microtask(
       () => context.read<CategoriesProvider>().fetchCategories(),
     );
+    super.initState();
   }
 
   @override
@@ -66,83 +61,58 @@ class _HomeScreenState extends State<HomeScreen>
       const SizedBox(height: 10),
       const Label(title: 'الأصناف'),
       const SizedBox(height: 10),
-      Consumer<CategoriesProvider>(
-        builder: (context, value, child) {
-          final categories = value.categories;
-          final _loading = value.isLoading;
-
-          return GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemCount: _loading ? 4 : categories.length,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemBuilder: (context, index) {
-              final Category category = categories[index];
-              return Padding(
-                padding: const EdgeInsets.all(8),
-                child: CategoryCard(
-                  loading: _loading,
-                  category: category,
-                ),
-              );
-            },
-          );
-        },
-      ),
+      const Categories(),
       const SizedBox(height: 10),
       const Label(
         title: "افضل مبيعاتنا",
       ),
       const SizedBox(height: 10),
-      ProductsGrid()
+      const ProductsGrid()
     ];
     return Directionality(
       textDirection: TextDirection.rtl,
       child: RefreshIndicator.adaptive(
         onRefresh: () async {
           Future.microtask(
-            () => context.read<ProductsProvider>().fetchProducts(),
+            () => context.read<ProductsProvider>().resetFilters(),
           );
           Future.microtask(
             () => context.read<CategoriesProvider>().fetchCategories(),
           );
         },
         child: Scaffold(
-          bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            // indicatorColor: Colors.amber,
-            selectedIndex: currentPageIndex,
-            destinations: const <Widget>[
-              NavigationDestination(
-                selectedIcon: Icon(Icons.home),
-                icon: Icon(Icons.home_outlined),
-                label: 'الرئيسية',
-              ),
-              NavigationDestination(
-                icon: Badge(child: Icon(Icons.description_outlined)),
-                label: 'الفواتير',
-              ),
-              NavigationDestination(
-                selectedIcon: Icon(Icons.person),
-                icon: Icon(Icons.person_3_outlined),
-                label: 'البروفايل',
-              ),
-              NavigationDestination(
-                icon: Badge(
-                  label: Text('2'),
-                  child: Icon(Icons.shopping_cart_outlined),
-                ),
-                label: 'السلة',
-              ),
-            ],
-          ),
+          // bottomNavigationBar: NavigationBar(
+          //   onDestinationSelected: (int index) {
+          //     setState(() {
+          //       currentPageIndex = index;
+          //     });
+          //   },
+          //   // indicatorColor: Colors.amber,
+          //   selectedIndex: currentPageIndex,
+          //   destinations: const <Widget>[
+          //     NavigationDestination(
+          //       selectedIcon: Icon(Icons.home),
+          //       icon: Icon(Icons.home_outlined),
+          //       label: 'الرئيسية',
+          //     ),
+          //     NavigationDestination(
+          //       icon: Badge(child: Icon(Icons.description_outlined)),
+          //       label: 'الفواتير',
+          //     ),
+          //     NavigationDestination(
+          //       selectedIcon: Icon(Icons.person),
+          //       icon: Icon(Icons.person_3_outlined),
+          //       label: 'البروفايل',
+          //     ),
+          //     NavigationDestination(
+          //       icon: Badge(
+          //         label: Text('2'),
+          //         child: Icon(Icons.shopping_cart_outlined),
+          //       ),
+          //       label: 'السلة',
+          //     ),
+          //   ],
+          // ),
           backgroundColor: Colors.white,
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -211,6 +181,45 @@ class _HomeScreenState extends State<HomeScreen>
   bool get wantKeepAlive => true;
 }
 
+class Categories extends StatelessWidget {
+  const Categories({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CategoriesProvider>(
+      builder: (context, value, child) {
+        final categories = value.categories;
+        final loading = value.isLoading;
+        return GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+          ),
+          itemCount: loading ? 4 : categories.length,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemBuilder: (context, index) {
+            if (!loading) {
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: CategoryCard(
+                  category: categories[index],
+                ),
+              );
+            }
+            return const Padding(
+              padding: EdgeInsets.all(8),
+              child: Skeleton(),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
 class Label extends StatelessWidget {
   const Label({
     super.key,
@@ -235,14 +244,12 @@ class CategoryCard extends StatelessWidget {
   final double width;
   final double height;
   final double radius;
-  final bool loading;
   const CategoryCard({
     super.key,
     required this.category,
     this.width = 150, // You can set default width
     this.height = 150,
     this.radius = 20,
-    this.loading = false,
   });
 
   @override
@@ -252,151 +259,51 @@ class CategoryCard extends StatelessWidget {
       child: SizedBox(
         width: width,
         height: height,
-        child: loading
-            ? const Skeleton()
-            : InkWell(
-                onTap: () => {},
-                child: Stack(
-                  children: [
-                    // Cached background image
-                    CachedNetworkImage(
-                      imageUrl: category.image!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                    // Black overlay with opacity
-                    Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      color: Colors.black
-                          .withOpacity(0.60), // Black with 60% opacity
-                    ),
-                    // Title on top of the black overlay
-                    Center(
-                      child: Text(
-                        category.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Material(
-                      color: Colors
-                          .transparent, // Transparent so you see underlying layers
-                      child: InkWell(
-                        onTap: () {}, // Trigger callback on tap
-                        splashColor:
-                            Colors.white.withOpacity(0.3), // Ripple color
-                        highlightColor:
-                            Colors.white.withOpacity(0.1), // Highlight on tap
-                      ),
-                    ),
-                  ],
+        child: InkWell(
+          onTap: () => {},
+          child: Stack(
+            children: [
+              // Cached background image
+              CachedNetworkImage(
+                imageUrl: category.image!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+              // Black overlay with opacity
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black.withOpacity(0.60), // Black with 60% opacity
+              ),
+              // Title on top of the black overlay
+              Center(
+                child: Text(
+                  category.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-      ),
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  const ProductCard({
-    super.key,
-    required this.product,
-    this.longPressEvent = false,
-  });
-
-  final Product product;
-  final bool longPressEvent;
-
-  IconData? get add_circle_outline_outlined => null;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card.outlined(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: InkWell(
-        onLongPress: () {
-          // if (!longPressEvent) return;
-          // context.push('${StoresPage.path}/${product.storeId}');
-        },
-        borderRadius: BorderRadius.circular(
-          GlobalVariables.defaultPadding,
-        ),
-        onTap: () {
-          context.push(
-            '/products/${product.id}',
-          );
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 2,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  GlobalVariables.defaultPadding,
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: product.image,
-                  fit: BoxFit.cover,
+              Material(
+                color: Colors
+                    .transparent, // Transparent so you see underlying layers
+                child: InkWell(
+                  onTap: () {}, // Trigger callback on tap
+                  splashColor: Colors.white.withOpacity(0.3), // Ripple color
+                  highlightColor:
+                      Colors.white.withOpacity(0.1), // Highlight on tap
                 ),
               ),
-            ),
-            // const SizedBox(height: 6),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          '${product.price} د',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton.filled(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.add_outlined,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -404,6 +311,12 @@ class ProductCard extends StatelessWidget {
 }
 
 class ProductsGrid extends StatelessWidget {
+  final int gridCol;
+
+  const ProductsGrid({
+    super.key,
+    this.gridCol = 2,
+  });
   @override
   Widget build(BuildContext context) {
     return Consumer<ProductsProvider>(
@@ -420,8 +333,8 @@ class ProductsGrid extends StatelessWidget {
             GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: gridCol,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: listLength,
@@ -438,8 +351,9 @@ class ProductsGrid extends StatelessWidget {
               },
             ),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: _buildFooter(context, onEnd, value))
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: _buildFooter(context, onEnd, value),
+            )
           ],
         );
       },
@@ -463,10 +377,11 @@ class ProductsGrid extends StatelessWidget {
   ) {
     if (!isLoading || products.isNotEmpty) {
       final Product product = products[index];
+      if (isLoading) {
+        return const ProductSkeleton();
+      }
       if (index < products.length) {
         return _buildProductCard(product);
-      } else if (isLoading) {
-        return const ProductSkeleton();
       } else {
         return const ProductSkeleton();
       }

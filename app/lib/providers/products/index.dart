@@ -31,7 +31,10 @@ class CategoriesProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await _categoryServices.getCategories('');
-      _categories = result;
+      // ignore: unnecessary_null_comparison
+      if (result != null) {
+        _categories = result;
+      }
     } catch (e) {
       _categories = [];
     } finally {

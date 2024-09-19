@@ -8,7 +8,7 @@ part of 'sku.dart';
 
 Sku _$SkuFromJson(Map<String, dynamic> json) => Sku(
       id: json['id'] as String,
-      qty: (json['qty'] as num).toDouble(),
+      qty: (json['qty'] as num).toInt(),
       hashedColor: json['hashedColor'] as String?,
       nameOfColor: json['nameOfColor'] as String?,
       productId: json['productId'] as String?,

@@ -20,11 +20,11 @@ import {
 } from "./components/forms";
 
 const page = async () => {
-  revalidateTag("products");
-  console.log("fixxess");
+  // revalidateTag("products");
+  // console.log("fixxess");
   // console.log(env.UPLOADTHING_APP_ID);
   const categories = await getCategories();
-  console.log(categories[0].brands);
+  // console.log(categories[0].brands);
   return (
     <main>
       <DashboardHeader>

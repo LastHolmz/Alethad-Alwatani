@@ -12,7 +12,7 @@ part 'sku.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Sku {
   final String id;
-  final double qty;
+  final int qty;
   final String? hashedColor;
   final String? nameOfColor;
   final String? productId;

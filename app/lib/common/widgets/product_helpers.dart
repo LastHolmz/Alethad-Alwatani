@@ -4,105 +4,97 @@ import 'package:e_commerce/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/constants/global_variables.dart';
-// import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
-// class Product {
-//   final String title;
-//   final String image;
-//   final double price;
-
-//   Product({required this.title, required this.image, required this.price});
-// }
-
-/// product card with listTile
 class ProductCard extends StatelessWidget {
   const ProductCard({
     super.key,
-    this.widht = 80,
-    this.height = 80,
-    this.longPressEvent = false,
     required this.product,
+    this.longPressEvent = false,
   });
-  final double widht;
-  final double height;
-  // set this to true if you want to navigate to store's product;
-  final bool longPressEvent;
 
   final Product product;
+  final bool longPressEvent;
+
+  IconData? get add_circle_outline_outlined => null;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: SizedBox(
-        child: InkWell(
-          // onLongPress: () {
+    return Card.outlined(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        onLongPress: () {
           // if (!longPressEvent) return;
           // context.push('${StoresPage.path}/${product.storeId}');
-          // },
-          onTap: () {
-            // context.push('/products/${product.id}');
-          },
-          hoverColor: Theme.of(context).colorScheme.onPrimary,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            textDirection: TextDirection.rtl,
-            children: [
-              ClipRRect(
+        },
+        borderRadius: BorderRadius.circular(
+          GlobalVariables.defaultPadding,
+        ),
+        onTap: () {
+          context.push(
+            '/products/${product.id}',
+          );
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              flex: 2,
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                  GlobalVariables.defalutRaduis,
+                  GlobalVariables.defaultPadding,
                 ),
                 child: CachedNetworkImage(
                   imageUrl: product.image,
-                  width: widht,
-                  height: height,
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: Column(
+            ),
+            // const SizedBox(height: 6),
+            Expanded(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      textDirection: TextDirection.rtl,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          product.title,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        Text(
                           '${product.price} د',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
                     ),
+                    IconButton.filled(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.add_outlined,
+                        color: Colors.white,
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -112,8 +104,8 @@ class ProductCard extends StatelessWidget {
 class ProductSkeleton extends StatelessWidget {
   const ProductSkeleton({
     super.key,
-    this.widht = 80,
-    this.height = 80,
+    this.widht = 150,
+    this.height = 150,
   });
   final double widht;
   final double height;
@@ -122,40 +114,9 @@ class ProductSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: SizedBox(
+      child: Skeleton(
         height: height,
-        child: Row(
-          // textDirection: TextDirection.rtl,
-          children: [
-            Skeleton(
-              height: height,
-              width: widht,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                // crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Skeleton(
-                    height: 7,
-                    width: MediaQuery.of(context).size.width,
-                  ),
-                  Skeleton(
-                    height: 7,
-                    width: MediaQuery.of(context).size.width / 2,
-                  ),
-                  Skeleton(
-                    height: 7,
-                    width: MediaQuery.of(context).size.width / 3,
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
+        width: widht,
       ),
     );
   }
