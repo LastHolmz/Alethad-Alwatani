@@ -58,7 +58,7 @@ export async function newProductAction(
         barcode,
         brandIDs,
         categoryIDs,
-        sku: skus,
+        skus: skus,
       },
     });
     return { message: newProduct.message };
@@ -101,7 +101,7 @@ export async function updateProductAction(
       id: formData.get("id"),
     });
     console.log(data);
-    console.log(data.success);
+    // console.log(data.success);
     if (!data.success) {
       return { message: "يجب أن يتم ملء جميع الحقول" };
     }
@@ -115,6 +115,18 @@ export async function updateProductAction(
       : [];
     const brandIDs = data.data?.brandIDs ? data.data.brandIDs.split(",") : [];
     const skus: ColorDetails[] = JSON.parse(data.data.skus);
+    console.log({
+      description,
+      image,
+      originalPrice: Number(originalPrice),
+      price: Number(price),
+      title,
+      barcode,
+      brandIDs,
+      categoryIDs,
+      skus,
+      id,
+    });
     console.log(skus);
     const newProduct = await updateProduct({
       product: {
@@ -126,7 +138,7 @@ export async function updateProductAction(
         barcode,
         brandIDs,
         categoryIDs,
-        sku: skus,
+        skus: skus,
         id,
       },
     });

@@ -12,7 +12,7 @@ declare interface Product {
   categories?: Category[];
   brandIDs: string[];
   brands?: Brand[];
-  sku: ColorDetails[];
+  skus: ColorDetails[];
 }
 
 declare interface Category {
@@ -45,4 +45,37 @@ declare interface ColorDetails {
   image?: string; // Corresponding to image String?
   product?: Product; // Corresponding to Product? relation
   productId?: string; // Corresponding to productId @db.ObjectId
+}
+
+declare interface User {
+  id: string; // Corresponds to @db.ObjectId
+  fullName: string;
+  password: string;
+  role: UserRole; // Enum type, you'll need to define this separately
+  status: UserStatus; // Enum type, you'll need to define this separately
+  gender: Gender; // Enum type, you'll need to define this separately
+  companyTitle: string;
+  location?: string; // Optional field
+  mobile: number; // Unique field
+  componeyMobile: number;
+  createdAt: Date; // JavaScript Date type for DateTime
+  updatedAt: Date; // JavaScript Date type for DateTime, automatically updated
+}
+
+// Example Enum definitions (You should update these based on your needs)
+enum UserRole {
+  admin = "admin",
+  user = "user",
+  guest = "guest",
+}
+
+enum UserStatus {
+  pending = "pending",
+  active = "active",
+  inactive = "inactive",
+}
+
+enum Gender {
+  man = "man",
+  woman = "woman",
 }

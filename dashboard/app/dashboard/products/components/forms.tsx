@@ -618,7 +618,7 @@ export const UpdateProductForm = ({
         </div>
       </div>
       <div>
-        <Colors defaultSkus={product.sku} />
+        <Colors defaultSkus={product.skus} />
       </div>
       <div>
         <ImageDropzone

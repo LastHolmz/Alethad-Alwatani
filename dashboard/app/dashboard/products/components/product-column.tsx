@@ -128,7 +128,7 @@ export const productColumn: ColumnDef<Product>[] = [
                 // size={"sm"}
                 href={`/dashboard/products/${product.id}/update`}
               >
-                تحديث
+                تحديث المنتج
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>

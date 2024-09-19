@@ -1,5 +1,6 @@
-import 'package:e_commerce/providers/cart/index.dart';
-import 'package:e_commerce/providers/products/index.dart';
+import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/providers/products_provider.dart';
+import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (context) => CategoriesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => ProductsProvider(),
@@ -34,6 +38,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    Future.microtask(() => context.read<UserProvider>().checkUser(context));
     Future.microtask(() => context.read<CartProvider>().fetchAtFirst());
   }
 
@@ -44,7 +49,8 @@ class _AppState extends State<App> {
       title: 'e-commerce',
       // debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 5, 244, 240)),
         useMaterial3: true,
       ),
       routerConfig: AppNavigation.router,

@@ -5,6 +5,7 @@ import 'package:e_commerce/models/cartItem.dart';
 import 'package:e_commerce/models/sku.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider extends ChangeNotifier {
@@ -17,19 +18,6 @@ class CartProvider extends ChangeNotifier {
   bool _isCartValid = false;
 
   bool get isCartValid => _isCartValid;
-
-  /// [checkIsCartValid] check all the skus if they valid or not
-  void checkIsCartValid(List<CartItem?> cart) {
-    _isCartValid = false;
-    for (final product in cart) {
-      // if (product!.notVaildAnyMore || product.state != ProductState.Working) {
-      if (product!.notVaildAnyMore) {
-        _isCartValid = false;
-        break;
-      }
-    }
-    _isCartValid = true;
-  }
 
   /// [cart] get the cart itself
   List<CartItem> get cart => _cart;
@@ -96,6 +84,7 @@ class CartProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('cart', '');
     notifyListeners();
+    checkValidity();
   }
 
   /// [addNewToCart] add new [CartItem] to cart
@@ -105,6 +94,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     String cartList = json.encode(_cart);
     await prefs.setString('cart', cartList);
+    checkValidity();
   }
 
   /// [addQtyToExistedCartItem]
@@ -134,6 +124,7 @@ class CartProvider extends ChangeNotifier {
         await prefs.setString('cart', cartList);
       }
     }
+    checkValidity();
   }
 
   void removeOne(String skuId, int? maxValue) async {
@@ -154,6 +145,7 @@ class CartProvider extends ChangeNotifier {
         await prefs.setString('cart', cartList);
       }
     }
+    checkValidity();
   }
 
   void deleteCompletely(String skuId, int? maxValue) async {
@@ -170,20 +162,15 @@ class CartProvider extends ChangeNotifier {
         await prefs.setString('cart', cartList);
       }
     }
+    checkValidity();
   }
 
   Future<void> compareCart() async {
     _isLoading = true;
     notifyListeners();
-    final skus = await bringInstance();
-    if (skus == null) {
-      // add snack bar to show couldn't compare cart
-      return;
-    } else {
-      for (final product in _cart) {
-        returnCartItemFromSku(product, skus);
-      }
-      checkIsCartValid(_cart);
+    final skus = await bringTheSkus();
+    for (final cartItem in _cart) {
+      returnCartItemFromSku(cartItem, skus);
     }
     _isLoading = false;
     notifyListeners();
@@ -194,19 +181,32 @@ class CartProvider extends ChangeNotifier {
       if (sku.id == cartItem.skuId) {
         cartItem.maxQty = sku.qty;
         cartItem.overQty = cartItem.qty > sku.qty ? true : false;
+      } else {
+        cartItem.notVaildAnyMore = true;
+        _isCartValid = false;
       }
     }
   }
 
-  Future<List<Sku>?> bringInstance() async {
-    Uri uri = apiUri('sku');
+  void checkValidity() {
+    for (final cartItem in _cart) {
+      if (cartItem.notVaildAnyMore) {
+        return;
+      }
+    }
+    _isCartValid = true;
+    notifyListeners();
+  }
+
+  Future<List<Sku>> bringTheSkus() async {
+    Uri uri = apiUri('skus/cart/verify');
     final String token = await getStoredToken();
     final skusIDs = getCartItemsIds();
     final Map<String, List<String>> map = <String, List<String>>{
       "cart": skusIDs
     };
 
-    final response = await http.post(
+    final Response response = await http.post(
       uri,
       headers: headers(token),
       body: json.encode(map),
@@ -214,8 +214,8 @@ class CartProvider extends ChangeNotifier {
 
     final Map<String, dynamic> body = json.decode(response.body);
     try {
-      if (body["success"]) {
-        final List<dynamic> dynamicSkus = body["data"]["cart"];
+      if (response.statusCode == 200) {
+        final List<dynamic> dynamicSkus = body["data"];
         final List<Sku> skus =
             dynamicSkus.map((sku) => Sku.fromJson(sku)).toList();
         return skus;
@@ -224,7 +224,7 @@ class CartProvider extends ChangeNotifier {
         return [];
       }
     } catch (e) {
-      return null;
+      return [];
     }
   }
 

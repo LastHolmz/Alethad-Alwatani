@@ -66,6 +66,10 @@ class CartItem {
     }
   }
 
+  void changeValidity(bool val) {
+    this.notVaildAnyMore = val;
+  }
+
   factory CartItem.fromJson(Map<String, dynamic> json) =>
       _$CartItemFromJson(json);
   Map<String, dynamic> toJson() => _$CartItemToJson(this);

@@ -1,8 +1,8 @@
 import 'package:e_commerce/constants/global_variables.dart';
 import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/product.dart';
-import 'package:e_commerce/services/categories/index.dart';
-import 'package:e_commerce/services/products/index.dart';
+import 'package:e_commerce/services/categoy_service.dart';
+import 'package:e_commerce/services/product_service.dart';
 import 'package:flutter/cupertino.dart';
 // import 'package:kraken_app/common/service/product.dart';
 // import 'package:kraken_app/constants/global_variables.dart';

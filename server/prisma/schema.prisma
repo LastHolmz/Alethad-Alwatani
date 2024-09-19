@@ -14,14 +14,18 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  fullName  String
-  phone     Int        @unique
-  password  String
-  role      UserRole   @default(guest)
-  status    UserStatus @default(denied)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  fullName       String
+  password       String
+  role           UserRole   @default(guest)
+  status         UserStatus @default(pending)
+  gender         Gender     @default(man)
+  companyTitle   String
+  location       String?
+  mobile         Int        @unique
+  componeyMobile Int
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 model Product {
@@ -74,12 +78,18 @@ model Sku {
 }
 
 enum UserStatus {
-  denied
-  accepted
+  pending
+  active
+  inactive
 }
 
 enum UserRole {
   user
   admin
   guest
+}
+
+enum Gender {
+  man
+  woman
 }

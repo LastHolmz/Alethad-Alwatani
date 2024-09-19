@@ -3,7 +3,7 @@ import 'package:e_commerce/common/widgets/product_helpers.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
-import 'package:e_commerce/providers/cart/index.dart';
+import 'package:e_commerce/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -42,9 +42,9 @@ class _CartScreenState extends State<CartScreen>
     opacity = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _animationController.forward();
     super.initState();
-    // Future.delayed(Duration.zero, () {
-    //   compareCart();
-    // });
+    Future.delayed(Duration.zero, () {
+      compareCart();
+    });
   }
 
   void reverseAnimation() {
@@ -69,19 +69,24 @@ class _CartScreenState extends State<CartScreen>
         opacity: opacity,
         child: Scaffold(
           appBar: AppBar(
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(10),
-              child: Divider(),
+            // bottom: const PreferredSize(
+            //   preferredSize: Size.fromHeight(10),
+            //   child: Divider(),
+            // ),
+            // leading: IconButton(
+            //   icon: const Icon(Icons.arrow_back),
+            //   onPressed: () {
+            //     context.pop();
+            //     reverseAnimation();
+            //   },
+            // ),
+            title: const Text(
+              'السلة',
+              style: TextStyle(fontSize: 20, color: Colors.white),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                context.pop();
-                reverseAnimation();
-              },
-            ),
-            title: const Text('سلتي'),
             centerTitle: true,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            // centerTitle: true,
           ),
           body: Consumer<CartProvider>(
             builder: (context, cartValues, _) {
@@ -140,14 +145,6 @@ class _CartScreenState extends State<CartScreen>
                             physics: const AlwaysScrollableScrollPhysics(),
                             shrinkWrap: true,
                             children: [
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('التوصيل إلى'),
-                                  // ShipToBtn(),
-                                ],
-                              ),
                               ListView.builder(
                                 itemCount: cartValues.cart.length,
                                 shrinkWrap: true,
@@ -163,23 +160,32 @@ class _CartScreenState extends State<CartScreen>
                                         price: price,
                                         cart: cartValues,
                                       ),
-                                      const Divider(),
+                                      // const Divider(),
                                     ],
                                   );
                                 },
                               ),
-                              // const Divider(),
                               const SizedBox(height: 10),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: cart.isEmpty
-                                    ? const SizedBox()
-                                    : OrderInfo(
-                                        cart: cartValues,
-                                      ),
+                              const Divider(),
+                              Column(
+                                children: [
+                                  const Text(
+                                    "الإجمالي",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text("${cartValues.pureTotalPrice} دينار",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 28,
+                                      ))
+                                ],
                               ),
-                              const SizedBox(height: 10),
                             ],
                           ),
                         );
@@ -188,7 +194,7 @@ class _CartScreenState extends State<CartScreen>
           bottomNavigationBar: Consumer<CartProvider>(
             builder: (context, cartValues, _) {
               final bool valid = cartValues.isCartValid;
-              final List<CartItem?> cart = cartValues.cart;
+              final List<CartItem> cart = cartValues.cart;
 
               return cart.isEmpty
                   ? const Text('')
@@ -199,113 +205,24 @@ class _CartScreenState extends State<CartScreen>
                         onPressed: !valid
                             ? null
                             : () {
-                                // if (!valid) return;
-                                // cartValues.comparteCart();
-                                // if (!valid) return;
-                                // context.push(Payment.path);
+                                context.push('/login');
+
+                                if (!valid) {
+                                  return;
+                                }
+                                cartValues.compareCart();
+                                if (!valid) {
+                                  return;
+                                }
+                                context.push('/login');
+                                // context.push('home');
+                                // print(valid);
                               },
                         child: const Text('إكمال الطلب'),
                       ),
                     );
             },
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class CartItemListTile extends StatelessWidget {
-  const CartItemListTile({
-    super.key,
-    required this.cartItem,
-    // required this.price,
-    required this.cart,
-  });
-
-  final CartItem cartItem;
-  final CartProvider cart;
-  // final double price;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: cartItem.image,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-          width: 70,
-          height: 150,
-        ),
-      ),
-      title: const Text(
-        "hi there this name of ur product",
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontWeight: FontWeight.w400),
-      ),
-      subtitle: Column(
-        children: [
-          Row(
-            children: [
-              Text(cartItem.nameOfColor ?? ""),
-              const Text(' / '),
-              ColorCircle(
-                color: getColorFromHex(cartItem.hashedColor),
-                width: 18,
-                height: 18,
-                radius: 2,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () async {
-                  await cart.addQtyToExistedCartItem(
-                    cartItem.skuId,
-                    null,
-                    context,
-                  );
-                },
-                icon: Icon(
-                  Icons.add,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              Text(cartItem.qty.toString()),
-              IconButton(
-                onPressed: () {
-                  cart.removeOne(cartItem.skuId, null);
-                },
-                icon: Icon(
-                  Icons.remove,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      isThreeLine: true,
-      trailing: SizedBox(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '${cartItem.price} د',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.delete),
-            )
-          ],
         ),
       ),
     );
@@ -366,62 +283,7 @@ class CustomCartItemListTile extends StatelessWidget {
                   ),
                   //  width: MediaQuery.of(context).size.width / 3,
                   const SizedBox(height: 10),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          padding: const EdgeInsets.all(0),
-                          onPressed: cartItem.qty >= cartItem.maxQty ||
-                                  cartItem.overQty
-                              ? null
-                              : () {
-                                  cart.addQtyToExistedCartItem(
-                                    cartItem.skuId,
-                                    null,
-                                    context,
-                                  );
-                                },
-                          icon: Icon(
-                            Icons.add,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(
-                                  cartItem.qty >= cartItem.maxQty ||
-                                          cartItem.overQty
-                                      ? 0.4
-                                      : 1,
-                                ),
-                          ),
-                        ),
-                        Center(
-                          child: Text(
-                            cartItem.qty.toString(),
-                          ),
-                        ),
-                        IconButton(
-                          padding: const EdgeInsets.all(0),
-                          onPressed: () {
-                            cart.removeOne(cartItem.skuId, null);
-                          },
-                          icon: Icon(
-                            Icons.remove,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+                  ProductQtyController(cartItem: cartItem, cart: cart)
                 ],
               ),
             ),
@@ -464,24 +326,6 @@ class CustomCartItemListTile extends StatelessWidget {
                 "هذا المنتج لم يعد متاحا. الرجاء حذف المنتج",
               )
             : const SizedBox(),
-        // cartItem.state == ProductState.Sent
-        //     ? Text(
-        //         style: TextStyle(
-        //           color: Theme.of(context).colorScheme.error,
-        //           fontSize: 12,
-        //         ),
-        //         "يتم شحن المنتج سيتوفر قريبا ",
-        //       )
-        //     : const SizedBox(),
-        // cartItem.state == ProductState.Pending
-        //     ? Text(
-        //         style: TextStyle(
-        //           color: Theme.of(context).colorScheme.error,
-        //           fontSize: 12,
-        //         ),
-        //         "نفذت ال",
-        //       )
-        //     : const SizedBox(),
       ],
     );
   }
@@ -648,6 +492,74 @@ class OrderInfo extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class ProductQtyController extends StatelessWidget {
+  const ProductQtyController({
+    super.key,
+    required this.cartItem,
+    required this.cart,
+  });
+
+  final CartItem cartItem;
+  final CartProvider cart;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: !cart.isCartValid
+                ? null
+                : cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                    ? null
+                    : () {
+                        cart.addQtyToExistedCartItem(
+                          cartItem.skuId,
+                          null,
+                          context,
+                        );
+                      },
+            icon: Icon(
+              Icons.add,
+              color: Theme.of(context).colorScheme.primary.withOpacity(
+                    cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                        ? 0.4
+                        : 1,
+                  ),
+            ),
+          ),
+          Center(
+            child: Text(
+              cartItem.qty.toString(),
+            ),
+          ),
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () {
+              cart.removeOne(cartItem.skuId, null);
+            },
+            icon: Icon(
+              Icons.remove,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

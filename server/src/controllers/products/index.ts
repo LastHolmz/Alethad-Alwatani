@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "../../errors";
 import prisma from "../../../prisma/db";
-import { generateUniqueBarcodeForProduct } from "../../lib/barcode";
 import { Sku } from "@prisma/client";
 
 /**
@@ -153,6 +151,7 @@ export const getProductById = async (req: Request, res: Response) => {
  */
 
 export const updateProduct = async (req: Request, res: Response) => {
+  console.log("calling updateProduct ...");
   try {
     const { id } = req.params;
     const {
@@ -162,7 +161,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       originalPrice,
       barcode,
       image,
-      sku,
+      skus,
       brandIDs,
       categoryIDs,
     }: {
@@ -170,14 +169,14 @@ export const updateProduct = async (req: Request, res: Response) => {
       originalPrice?: number;
       title: string;
       description?: string;
-      sku: Sku[];
+      skus: Sku[];
       brandIDs?: string[];
       categoryIDs?: string[];
       image: string;
       barcode: string;
     } = req.body;
 
-    if (!title || !price || !sku || !image || !barcode) {
+    if (!title || !price || !image || !barcode) {
       return res.status(400).json({ message: "يجب ملء كل الحقول" });
     }
 
@@ -198,11 +197,17 @@ export const updateProduct = async (req: Request, res: Response) => {
     };
 
     // Only include SKUs if the array is not empty
-    if (sku.length > 0) {
+    if (skus.length > 0) {
       updateData.skus = {
         deleteMany: {}, // Delete all existing SKUs (modify as needed)
         createMany: {
-          data: sku,
+          data: skus.map((sku) => ({
+            id: sku.id,
+            hashedColor: sku?.hashedColor,
+            nameOfColor: sku?.nameOfColor,
+            image: sku?.image,
+            qty: sku?.qty,
+          })),
         },
       };
     }

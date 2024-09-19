@@ -1,36 +1,14 @@
 import 'package:e_commerce/common/widgets/wrapper.dart';
+import 'package:e_commerce/screens/auth/index.dart';
 import 'package:e_commerce/screens/bills/index.dart';
 import 'package:e_commerce/screens/cart/index.dart';
 import 'package:e_commerce/screens/home/index.dart';
 import 'package:e_commerce/screens/products/id/index.dart';
 import 'package:e_commerce/screens/profile/index.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-// GoRouter configuration
-final router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      name: HomeScreen
-          .name, // Optional, add name to your routes. Allows you navigate by name instead of path
-      path: HomeScreen.path,
-      builder: (context, state) => const HomeScreen(),
-    ),
-    // GoRoute(
-    //     name: 'page2',
-    //     path: '/page2',
-    //     builder: (context, state) => Page2Screen(),
-    //   ),
-    GoRoute(
-      path: '/products/:id',
-      builder: (context, state) {
-        final id = state.pathParameters['id']; // Get "id" param from URL
-        return ProductDetails(id: id);
-      },
-    )
-  ],
-);
+// import 'package:flutter_login/flutter_login.dart';
 
 class AppNavigation {
   AppNavigation._();
@@ -56,6 +34,12 @@ class AppNavigation {
         builder: (context, state) {
           final id = state.pathParameters['id']; // Get "id" param from URL
           return ProductDetails(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) {
+          return LoginScreen();
         },
       ),
       StatefulShellRoute.indexedStack(
@@ -101,8 +85,15 @@ class AppNavigation {
               GoRoute(
                 name: CartScreen.name,
                 path: CartScreen.path,
-                builder: (context, state) => CartScreen(key: state.pageKey),
-              ),
+                builder: (context, state) => CartScreen(
+                  key: state.pageKey,
+                ),
+              )
+              //   pageBuilder: (context, state) =>
+              //       MaterialPage(child: const CartScreen(), key: UniqueKey()),
+              // ),
+
+              // builder: (context, state) => CartScreen(key: UniqueKey()),
             ],
           ),
           // StatefulShellBranch(

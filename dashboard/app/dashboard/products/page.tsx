@@ -18,9 +18,8 @@ import { revalidateTag } from "next/cache";
 const page = async () => {
   revalidateTag("products");
   console.log("fixxess");
-  // console.log(env.UPLOADTHING_APP_ID);
   const products = await getProducts();
-  // console.log(products);
+  // console.log(products[products.length - 2]);
   return (
     <main>
       <DashboardHeader>
@@ -54,7 +53,7 @@ const page = async () => {
             searchQuery="title"
           >
             <CustomLink
-              className="mx-2"
+              className="mx-2 bg-primary hover:bg-primary/80"
               variant={"destructive"}
               href="products/new"
             >

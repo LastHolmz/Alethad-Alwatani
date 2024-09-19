@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
-void showSnackBar(BuildContext context, String text) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(text),
+void showSnackBar(BuildContext context, String content) {
+  final snackBar = SnackBar(
+    content: Text(content),
+    backgroundColor: Colors.teal,
+    behavior: SnackBarBehavior.floating,
+    action: SnackBarAction(
+      label: 'إغلاق',
+      disabledTextColor: Colors.white,
+      textColor: Colors.yellow,
+      onPressed: () {
+        //Do whatever you want
+      },
     ),
   );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
 Color? getColorFromHex(String? hexCode) {

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../../prisma/db";
+import { BadRequestError, NotFoundError } from "../../errors";
 
 /**
  * Create a new SKU for a product.
@@ -152,5 +153,31 @@ export const getSkuById = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error, message: "حدث خطأ داخلي", data: undefined });
+  }
+};
+
+export const checkCart = async (req: Request, res: Response) => {
+  console.log("calling check cart validty ...");
+  try {
+    const { cart }: { cart: string[] } = req.body;
+    if (!cart) {
+      return res
+        .json({ message: "cart products have to be provided", data: [] })
+        .status(400);
+    }
+    const cartResponse = await prisma.sku.findMany({
+      where: {
+        id: {
+          in: cart,
+        },
+      },
+    });
+    if (!cartResponse) {
+      return res.json({ message: "فشلت العملية", data: [] }).status(400);
+    }
+    return res.json({ data: cartResponse });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error, message: "حدث خطأ داخلي", data: [] });
   }
 };

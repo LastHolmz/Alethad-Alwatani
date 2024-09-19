@@ -5,8 +5,8 @@ import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
 import 'package:e_commerce/models/product.dart';
 import 'package:e_commerce/models/sku.dart';
-import 'package:e_commerce/providers/cart/index.dart';
-import 'package:e_commerce/services/products/index.dart';
+import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/services/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -263,6 +263,7 @@ class _skusSheetContentState extends State<skusSheetContent> {
         nameOfColor: sku.nameOfColor,
         hashedColor: sku.hashedColor,
         skuImage: sku.image,
+        notVaildAnyMore: false,
       );
       cart.add(cartItem);
     }
@@ -408,22 +409,27 @@ class ControllProductQty extends StatelessWidget {
               onPressed: () {
                 cartItem.incrementQty(cartItem.maxQty);
                 cart.addNewToCart(cartItem);
+                showSnackBar(context, "تم الإضافة إلى السلة");
               },
-              child: const Text("أضف"))
+              child: const Text("أضف"),
+            )
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                  onPressed: cart.isCartValid
                       ? null
-                      : () {
-                          cart.addQtyToExistedCartItem(
-                            cartItem.skuId,
-                            null,
-                            context,
-                          );
-                        },
+                      : cartItem.qty >= cartItem.maxQty || cartItem.overQty
+                          ? null
+                          : () {
+                              cart.addQtyToExistedCartItem(
+                                cartItem.skuId,
+                                cartItem.maxQty,
+                                context,
+                              );
+                              showSnackBar(context, "تم تحديث السلة");
+                            },
                   icon: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.primary.withOpacity(
@@ -441,7 +447,8 @@ class ControllProductQty extends StatelessWidget {
                 IconButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
-                    cart.removeOne(cartItem.skuId, null);
+                    cart.removeOne(cartItem.skuId, cartItem.maxQty);
+                    showSnackBar(context, "تم تحديث السلة");
                   },
                   icon: Icon(
                     Icons.remove,

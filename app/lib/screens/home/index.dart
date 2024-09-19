@@ -3,7 +3,7 @@ import 'package:e_commerce/common/widgets/product_helpers.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/product.dart';
-import 'package:e_commerce/providers/products/index.dart';
+import 'package:e_commerce/providers/products_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/image_slider.dart';
@@ -315,7 +315,7 @@ class ProductsGrid extends StatelessWidget {
 
   const ProductsGrid({
     super.key,
-    this.gridCol = 2,
+    this.gridCol = 3,
   });
   @override
   Widget build(BuildContext context) {
@@ -335,8 +335,11 @@ class ProductsGrid extends StatelessWidget {
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: gridCol,
+                mainAxisExtent: 200,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+              ),
               itemCount: listLength,
               itemBuilder: (BuildContext context, int index) {
                 return _buildGridItem(
@@ -403,7 +406,9 @@ class ProductsGrid extends StatelessWidget {
   Widget _buildProductCard(Product product) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: ProductCard(product: product),
+      child: ProductCard(
+        product: product,
+      ),
     );
   }
 

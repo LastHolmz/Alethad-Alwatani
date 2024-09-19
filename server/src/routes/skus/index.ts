@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  checkCart,
   createNewSku,
   deleteSku,
   getSkuById,
@@ -12,5 +13,6 @@ const router = express.Router();
 router.post("/:productId", createNewSku);
 router.route("/:skuId").put(updateSku).delete(deleteSku).get(getSkuById);
 router.route("/").get(getSkus);
+router.route("/cart/verify").post(checkCart);
 
 export default router;
