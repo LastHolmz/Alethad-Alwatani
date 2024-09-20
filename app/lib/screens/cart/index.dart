@@ -4,6 +4,7 @@ import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
 import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,26 +30,13 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> opacity;
+class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    opacity = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _animationController.forward();
     super.initState();
     Future.delayed(Duration.zero, () {
       compareCart();
     });
-  }
-
-  void reverseAnimation() {
-    _animationController.reverse();
   }
 
   void compareCart() async {
@@ -56,173 +44,158 @@ class _CartScreenState extends State<CartScreen>
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: FadeTransition(
-        opacity: opacity,
-        child: Scaffold(
-          appBar: AppBar(
-            // bottom: const PreferredSize(
-            //   preferredSize: Size.fromHeight(10),
-            //   child: Divider(),
-            // ),
-            // leading: IconButton(
-            //   icon: const Icon(Icons.arrow_back),
-            //   onPressed: () {
-            //     context.pop();
-            //     reverseAnimation();
-            //   },
-            // ),
-            title: const Text(
-              'السلة',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            centerTitle: true,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            // centerTitle: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'السلة',
+            style: TextStyle(fontSize: 20, color: Colors.white),
           ),
-          body: Consumer<CartProvider>(
-            builder: (context, cartValues, _) {
-              final List<CartItem?> cart = cartValues.cart;
-              final bool isloading = cartValues.isloading;
-              return isloading
-                  ? ListView.builder(
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int index) {
-                        return const ProductSkeleton();
-                      },
-                    )
-                  : cart.isEmpty
-                      ? SizedBox(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  context.push(
-                                    '/products',
-                                    extra: {'search_query': ''},
-                                  );
-                                },
-                                child: Icon(
-                                  CupertinoIcons.cart_badge_plus,
-                                  size: 96,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          // centerTitle: true,
+        ),
+        body: Consumer<CartProvider>(
+          builder: (context, cartValues, _) {
+            final List<CartItem?> cart = cartValues.cart;
+            final bool isloading = cartValues.isloading;
+            return isloading
+                ? ListView.builder(
+                    itemCount: 10,
+                    itemBuilder: (BuildContext context, int index) {
+                      return const ProductSkeleton();
+                    },
+                  )
+                : cart.isEmpty
+                    ? SizedBox(
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                context.push(
+                                  '/products',
+                                  extra: {'search_query': ''},
+                                );
+                              },
+                              child: Icon(
+                                CupertinoIcons.cart_badge_plus,
+                                size: 96,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                              const Text(
-                                'السلة فارغة',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              const SizedBox(height: 20),
-                              TextButton(
-                                child: const Text('تصفح المنتجات'),
-                                onPressed: () {
-                                  context.push(
-                                    '/products',
-                                    extra: {'search_query': ''},
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        )
-                      : Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          height: MediaQuery.of(context).size.height,
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            children: [
-                              ListView.builder(
-                                itemCount: cartValues.cart.length,
-                                shrinkWrap: true,
-                                padding: const EdgeInsets.all(4),
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (BuildContext context, int index) {
-                                  final cartItem = cartValues.cart[index];
-                                  double price = cartItem.price * cartItem.qty;
-                                  return Column(
-                                    children: [
-                                      CustomCartItemListTile(
+                            ),
+                            const Text(
+                              'السلة فارغة',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            const SizedBox(height: 20),
+                            TextButton(
+                              child: const Text('تصفح المنتجات'),
+                              onPressed: () {
+                                context.push(
+                                  '/products',
+                                  extra: {'search_query': ''},
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          children: [
+                            ListView.builder(
+                              itemCount: cartValues.cart.length,
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(4),
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                final cartItem = cartValues.cart[index];
+                                double price = cartItem.price * cartItem.qty;
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8,
+                                      ),
+                                      child: CustomCartItemListTile(
                                         cartItem: cartItem,
                                         price: price,
                                         cart: cartValues,
                                       ),
-                                      // const Divider(),
-                                    ],
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              const Divider(),
-                              Column(
-                                children: [
-                                  const Text(
-                                    "الإجمالي",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 24,
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text("${cartValues.pureTotalPrice} دينار",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 28,
-                                      ))
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-            },
-          ),
-          bottomNavigationBar: Consumer<CartProvider>(
-            builder: (context, cartValues, _) {
-              final bool valid = cartValues.isCartValid;
-              final List<CartItem> cart = cartValues.cart;
-
-              return cart.isEmpty
-                  ? const Text('')
-                  : Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 20),
-                      child: FilledButton(
-                        onPressed: !valid
-                            ? null
-                            : () {
-                                context.push('/login');
-
-                                if (!valid) {
-                                  return;
-                                }
-                                cartValues.compareCart();
-                                if (!valid) {
-                                  return;
-                                }
-                                context.push('/login');
-                                // context.push('home');
-                                // print(valid);
+                                    // const Divider(),
+                                  ],
+                                );
                               },
-                        child: const Text('إكمال الطلب'),
-                      ),
-                    );
-            },
-          ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Divider(),
+                            Column(
+                              children: [
+                                const Text(
+                                  "الإجمالي",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("${cartValues.pureTotalPrice} دينار",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 28,
+                                    ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+          },
+        ),
+        bottomNavigationBar: Consumer<CartProvider>(
+          builder: (context, cartValues, _) {
+            final bool valid = cartValues.isCartValid;
+            final List<CartItem> cart = cartValues.cart;
+
+            return cart.isEmpty
+                ? const Text('')
+                : Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 20),
+                    child: FilledButton(
+                      onPressed: !valid
+                          ? null
+                          : () {
+                              // context.push('/login');
+
+                              if (!valid) {
+                                return;
+                              }
+                              cartValues.compareCart();
+                              if (!valid) {
+                                return;
+                              }
+                              context.push(NewOrderScreen.path);
+                              // context.push('home');
+                              // print(valid);
+                            },
+                      child: const Text('إكمال الطلب'),
+                    ),
+                  );
+          },
         ),
       ),
     );
@@ -551,7 +524,7 @@ class ProductQtyController extends StatelessWidget {
           IconButton(
             padding: const EdgeInsets.all(0),
             onPressed: () {
-              cart.removeOne(cartItem.skuId, null);
+              cart.removeOne(cartItem.skuId, cartItem.maxQty);
             },
             icon: Icon(
               Icons.remove,

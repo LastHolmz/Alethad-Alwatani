@@ -1,4 +1,5 @@
 import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/providers/orders_provider.dart';
 import 'package:e_commerce/providers/products_provider.dart';
 import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/routes.dart';
@@ -21,6 +22,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => CartProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => OrdersProvider(),
+        ),
       ],
       child: const App(),
     ),
@@ -38,7 +42,10 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<UserProvider>().checkUser(context));
+    Future.delayed(
+      Duration.zero,
+      () async => context.read<UserProvider>().checkUser(context),
+    );
     Future.microtask(() => context.read<CartProvider>().fetchAtFirst());
   }
 

@@ -15,7 +15,7 @@ class CartProvider extends ChangeNotifier {
   bool get isloading => _isLoading;
 
   /// [_isCartValid] cart valid or not if false you cann't proceed to pay
-  bool _isCartValid = false;
+  bool _isCartValid = true;
 
   bool get isCartValid => _isCartValid;
 
@@ -78,8 +78,26 @@ class CartProvider extends ChangeNotifier {
     return currentCartItem;
   }
 
-  /// [removeAllFromCart] clear the cart
-  Future<void> removeAllFromCart() async {
+  List<CartItem> validTheCartItems(
+      List<String> ids, List<CartItem> allCartItems) {
+    // Filter the classes to find those whose id is not in the ids list
+    final notFoundCartItems = allCartItems
+        .where((classInstance) => !ids.contains(classInstance.skuId))
+        .toList();
+    final cartItems = allCartItems
+        .where((classInstance) => ids.contains(classInstance.skuId))
+        .toList();
+    for (final cartItem in notFoundCartItems) {
+      cartItem.changeValidity(false);
+    }
+    return [
+      ...cartItems,
+      ...notFoundCartItems,
+    ];
+  }
+
+  /// [clearCart] clear the cart
+  Future<void> clearCart() async {
     _cart.clear();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('cart', '');
@@ -90,6 +108,7 @@ class CartProvider extends ChangeNotifier {
   /// [addNewToCart] add new [CartItem] to cart
   Future<void> addNewToCart(CartItem cartItem) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     _cart.add(cartItem);
     notifyListeners();
     String cartList = json.encode(_cart);
@@ -110,7 +129,7 @@ class CartProvider extends ChangeNotifier {
   ) async {
     for (final cartItem in _cart) {
       if (cartItem.skuId == skuId) {
-        cartItem.incrementQty(maxValue);
+        cartItem.incrementQty();
         if (maxValue != null) {
           cartItem.setMaxQty(maxValue);
           //* if qty == max value show snack bar
@@ -172,6 +191,7 @@ class CartProvider extends ChangeNotifier {
     for (final cartItem in _cart) {
       returnCartItemFromSku(cartItem, skus);
     }
+    validTheCartItems(getCartItemsIds(), cart);
     _isLoading = false;
     notifyListeners();
   }
@@ -181,9 +201,6 @@ class CartProvider extends ChangeNotifier {
       if (sku.id == cartItem.skuId) {
         cartItem.maxQty = sku.qty;
         cartItem.overQty = cartItem.qty > sku.qty ? true : false;
-      } else {
-        cartItem.notVaildAnyMore = true;
-        _isCartValid = false;
       }
     }
   }

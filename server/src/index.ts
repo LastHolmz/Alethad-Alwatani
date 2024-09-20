@@ -12,6 +12,7 @@ import {
   skusRouters,
   categoriesRouters,
   brandsRouters,
+  ordersRouters,
 } from "./routes";
 // import bodyParser from 'body-parser';
 
@@ -45,6 +46,7 @@ app.use("/api/v1/products", productsRouters);
 app.use("/api/v1/skus", skusRouters);
 app.use("/api/v1/categories", categoriesRouters);
 app.use("/api/v1/brands", brandsRouters);
+app.use("/api/v1/orders", ordersRouters);
 // app.use("/api/v1", isAuth, authorise(false, "user"), adminRoutes);
 app.use(notFound);
 app.use(errorHandlerMiddleware);

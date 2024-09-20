@@ -81,38 +81,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
         child: Scaffold(
-          // bottomNavigationBar: NavigationBar(
-          //   onDestinationSelected: (int index) {
-          //     setState(() {
-          //       currentPageIndex = index;
-          //     });
-          //   },
-          //   // indicatorColor: Colors.amber,
-          //   selectedIndex: currentPageIndex,
-          //   destinations: const <Widget>[
-          //     NavigationDestination(
-          //       selectedIcon: Icon(Icons.home),
-          //       icon: Icon(Icons.home_outlined),
-          //       label: 'الرئيسية',
-          //     ),
-          //     NavigationDestination(
-          //       icon: Badge(child: Icon(Icons.description_outlined)),
-          //       label: 'الفواتير',
-          //     ),
-          //     NavigationDestination(
-          //       selectedIcon: Icon(Icons.person),
-          //       icon: Icon(Icons.person_3_outlined),
-          //       label: 'البروفايل',
-          //     ),
-          //     NavigationDestination(
-          //       icon: Badge(
-          //         label: Text('2'),
-          //         child: Icon(Icons.shopping_cart_outlined),
-          //       ),
-          //       label: 'السلة',
-          //     ),
-          //   ],
-          // ),
           backgroundColor: Colors.white,
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -196,6 +164,7 @@ class Categories extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisExtent: 180,
             crossAxisCount: 3,
           ),
           itemCount: loading ? 4 : categories.length,
@@ -211,7 +180,7 @@ class Categories extends StatelessWidget {
             }
             return const Padding(
               padding: EdgeInsets.all(8),
-              child: Skeleton(),
+              child: CategorySkeleton(),
             );
           },
         );
@@ -247,64 +216,86 @@ class CategoryCard extends StatelessWidget {
   const CategoryCard({
     super.key,
     required this.category,
-    this.width = 150, // You can set default width
-    this.height = 150,
+    this.width = 100, // You can set default width
+    this.height = 100,
     this.radius = 20,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: SizedBox(
-        width: width,
-        height: height,
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ClipRRect(
         child: InkWell(
           onTap: () => {},
-          child: Stack(
+          child: Column(
             children: [
-              // Cached background image
-              CachedNetworkImage(
-                imageUrl: category.image!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: CachedNetworkImage(
+                  imageUrl: category.image!,
+                  fit: BoxFit.cover,
+                  width: width,
+                  height: height,
+                  placeholder: (context, url) => const Center(
+                    child: const Skeleton(
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               // Black overlay with opacity
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.black.withOpacity(0.60), // Black with 60% opacity
-              ),
+
               // Title on top of the black overlay
+              const SizedBox(height: 10),
               Center(
                 child: Text(
                   category.title,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black87),
                   textAlign: TextAlign.center,
-                ),
-              ),
-              Material(
-                color: Colors
-                    .transparent, // Transparent so you see underlying layers
-                child: InkWell(
-                  onTap: () {}, // Trigger callback on tap
-                  splashColor: Colors.white.withOpacity(0.3), // Ripple color
-                  highlightColor:
-                      Colors.white.withOpacity(0.1), // Highlight on tap
+                  maxLines: 1,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CategorySkeleton extends StatelessWidget {
+  const CategorySkeleton({
+    super.key,
+    this.widht = 100,
+    this.height = 100,
+  });
+  final double widht;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Skeleton(
+            height: height,
+            width: widht,
+          ),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Skeleton(height: 10),
+          ),
+        ],
       ),
     );
   }
@@ -381,12 +372,12 @@ class ProductsGrid extends StatelessWidget {
     if (!isLoading || products.isNotEmpty) {
       final Product product = products[index];
       if (isLoading) {
-        return const ProductSkeleton();
+        return const CategorySkeleton();
       }
       if (index < products.length) {
         return _buildProductCard(product);
       } else {
-        return const ProductSkeleton();
+        return const CategorySkeleton();
       }
       // } else {
       //   return const ProductSkeleton();
@@ -398,7 +389,7 @@ class ProductsGrid extends StatelessWidget {
       // return _buildFooter(context, onEnd, value);
       // }
     } else {
-      return const ProductSkeleton();
+      return const CategorySkeleton();
     }
   }
 

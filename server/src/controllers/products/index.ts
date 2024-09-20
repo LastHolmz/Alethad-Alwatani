@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../../../prisma/db";
 import { Sku } from "@prisma/client";
+import updateSkuQuantitiesWithUndo from "../../lib/order-utility";
 
 /**
  * Get all products.
@@ -12,11 +13,23 @@ import { Sku } from "@prisma/client";
 export const getProducts = async (req: Request, res: Response) => {
   try {
     console.log("استدعاء getProducts ...");
+    const { barcode, title }: { barcode?: string; title?: string } = req.query;
     const products = await prisma.product.findMany({
+      where: {
+        barcode: {
+          contains: barcode,
+        },
+        title: {
+          contains: title,
+        },
+      },
       include: {
         brands: true,
         categories: true,
         skus: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
     if (!products) return res.json({ data: [] });
@@ -44,7 +57,7 @@ export const createProduct = async (req: Request, res: Response) => {
       title,
       description,
       originalPrice,
-      sku,
+      skus,
       brandIDs,
       categoryIDs,
       image,
@@ -54,15 +67,15 @@ export const createProduct = async (req: Request, res: Response) => {
       originalPrice?: number;
       title: string;
       description?: string;
-      sku: Sku[];
+      skus: Sku[];
       brandIDs?: string[];
       categoryIDs?: string[];
       image: string;
       barcode: string;
     } = req.body;
-    console.log(req.body);
+
     //need to be returned
-    if (!title || !price || !sku || !image || !barcode) {
+    if (!title || !price || !skus || !image || !barcode) {
       return res.status(400).json({ message: "يجب ملء كل الحقول" });
     }
 
@@ -79,7 +92,7 @@ export const createProduct = async (req: Request, res: Response) => {
           "https://images.unsplash.com/photo-1720048169970-9c651cf17ccd?q=80&w=1914&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         skus: {
           createMany: {
-            data: sku,
+            data: skus,
           },
         },
         brands: {

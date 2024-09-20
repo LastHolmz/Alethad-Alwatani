@@ -26,6 +26,7 @@ model User {
   componeyMobile Int
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  orders         Order[]
 }
 
 model Product {
@@ -75,6 +76,45 @@ model Sku {
   image       String?
   Product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId   String?  @db.ObjectId
+}
+
+model Order {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  user       User?       @relation(fields: [userId], references: [id])
+  userId     String?     @db.ObjectId
+  totalPrice Int         @default(0)
+  rest       Int         @default(0)
+  orderItems OrderItem[]
+  status     OrderStatus @default(pending)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  barcode    String      @unique
+}
+
+model OrderItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId   String // ID of the product
+  skuId       String // Stock Keeping Unit ID
+  barcode     String // Barcode of the product
+  qty         Int // Quantity of the item in the cart
+  title       String // Title of the product
+  image       String // URL of the product image
+  skuImage    String? // Optional URL for SKU-specific image
+  hashedColor String? // Optional hashed color code
+  price       Float // Price of the item
+  nameOfColor String? // Optional name of the color
+  createdAt   DateTime @default(now()) // Timestamp for when the item was added to the cart
+  updatedAt   DateTime @updatedAt
+  order       Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String?  @db.ObjectId
+}
+
+enum OrderStatus {
+  pending
+  inProgress
+  done
+  rejected
+  refused
 }
 
 enum UserStatus {

@@ -118,8 +118,8 @@ import 'package:provider/provider.dart';
 class ProductSkeleton extends StatelessWidget {
   const ProductSkeleton({
     super.key,
-    this.widht = 150,
-    this.height = 150,
+    this.widht = 100,
+    this.height = 100,
   });
   final double widht;
   final double height;
@@ -128,15 +128,28 @@ class ProductSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: Skeleton(
-        height: height,
-        width: widht,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Skeleton(
+            height: height,
+            width: widht,
+          ),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Skeleton(height: 10),
+          ),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Skeleton(height: 10),
+          ),
+        ],
       ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -166,12 +179,14 @@ class ProductCard extends StatelessWidget {
                 child: Container(
                   width: 100,
                   height: 100,
-
                   // You can also add a placeholder or error widget using CachedNetworkImage directly:
                   child: CachedNetworkImage(
                     imageUrl: product.image,
                     placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(),
+                      child: const Skeleton(
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
                     ),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
@@ -183,7 +198,7 @@ class ProductCard extends StatelessWidget {
               Positioned(
                 bottom: 6,
                 left: 6,
-                child: FilledButton(
+                child: ElevatedButton(
                   onPressed: () {
                     showModalBottomSheet(
                       showDragHandle: false,
@@ -197,14 +212,20 @@ class ProductCard extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    minimumSize:
-                        const Size(40, 40), // Minimum size for the button
+                    minimumSize: const Size(
+                      40,
+                      40,
+                    ), // Minimum size for the button
                     padding: EdgeInsets.zero, // Remove default padding
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                   ),
-                  child: const Icon(Icons.add, size: 20, color: Colors.white),
+                  child: const Icon(
+                    Icons.add,
+                    size: 24,
+                    // color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -222,7 +243,6 @@ class ProductCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 8), // Spacing between image and price
-
               Consumer<UserProvider>(builder: (context, value, child) {
                 final user = value.user;
                 final allowedContent = value.renderToStatus(

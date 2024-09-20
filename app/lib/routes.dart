@@ -1,14 +1,14 @@
 import 'package:e_commerce/common/widgets/wrapper.dart';
-import 'package:e_commerce/screens/auth/index.dart';
-import 'package:e_commerce/screens/bills/index.dart';
+import 'package:e_commerce/screens/auth/sign_up.dart';
 import 'package:e_commerce/screens/cart/index.dart';
 import 'package:e_commerce/screens/home/index.dart';
+import 'package:e_commerce/screens/orders/new_order/new_order.dart';
+import 'package:e_commerce/screens/orders/orders_screen.dart';
 import 'package:e_commerce/screens/products/id/index.dart';
 import 'package:e_commerce/screens/profile/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-// import 'package:flutter_login/flutter_login.dart';
 
 class AppNavigation {
   AppNavigation._();
@@ -37,9 +37,15 @@ class AppNavigation {
         },
       ),
       GoRoute(
-        path: '/login',
+        path: SingUpScreen.path,
         builder: (context, state) {
-          return LoginScreen();
+          return SingUpScreen();
+        },
+      ),
+      GoRoute(
+        path: NewOrderScreen.path,
+        builder: (context, state) {
+          return const NewOrderScreen();
         },
       ),
       StatefulShellRoute.indexedStack(
@@ -63,9 +69,9 @@ class AppNavigation {
             navigatorKey: _rootNavigatorBills,
             routes: [
               GoRoute(
-                name: BillsSceen.name,
-                path: BillsSceen.path,
-                builder: (context, state) => BillsSceen(key: state.pageKey),
+                name: OrdersScreen.name,
+                path: OrdersScreen.path,
+                builder: (context, state) => OrdersScreen(key: state.pageKey),
               ),
             ],
           ),

@@ -18,13 +18,14 @@ class Sku {
   final String? productId;
   final String? image;
 
-  Sku(
-      {required this.id,
-      required this.qty,
-      required this.hashedColor,
-      required this.nameOfColor,
-      required this.productId,
-      required this.image});
+  Sku({
+    required this.id,
+    required this.qty,
+    required this.hashedColor,
+    required this.nameOfColor,
+    required this.productId,
+    required this.image,
+  });
   factory Sku.fromJson(Map<String, dynamic> json) => _$SkuFromJson(json);
   Map<String, dynamic> toJson() => _$SkuToJson(this);
 }

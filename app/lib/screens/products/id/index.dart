@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/common/widgets/circle_color.dart';
 import 'package:e_commerce/common/widgets/image_slider.dart';
+import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
 import 'package:e_commerce/models/product.dart';
@@ -122,14 +123,15 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    'الألوان المتوفرة',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 18,
+                                  Text(
+                                    '${product?.price} دينار',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
+                                  const SizedBox(height: 10),
+                                  const Divider(),
                                   const SizedBox(height: 10),
                                   Wrap(
                                     spacing:
@@ -138,15 +140,19 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         4.0, // Adjust spacing between lines
                                     children: product?.skus
                                             ?.map((sku) => ColorCircle(
-                                                  width: 24,
-                                                  height: 24,
+                                                  width: 40,
+                                                  height: 40,
+                                                  radius: 6,
                                                   color: getColorFromHex(
-                                                      sku.hashedColor),
+                                                    sku.hashedColor,
+                                                  ),
                                                 ))
                                             .toList() ??
                                         [],
                                   ),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 10),
+                                  const Divider(),
+                                  const SizedBox(height: 10),
                                   Text(product?.description ?? ""),
                                   const SizedBox(height: 10),
                                   const Divider(),
@@ -187,7 +193,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                                           child: CachedNetworkImage(
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
-                                                const CircularProgressIndicator(),
+                                                const Skeleton(
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                            ),
                                             errorWidget:
                                                 (context, url, error) =>
                                                     const Icon(
@@ -328,7 +337,18 @@ class _skusSheetContentState extends State<skusSheetContent> {
                                     subtitle: Row(
                                       children: [
                                         Text(
-                                          'المتوفر: ${cartItem.qty} |  ${cartItem.nameOfColor} | ',
+                                          cartItem.maxQty > 0
+                                              ? "متوفر"
+                                              : "غير متوفر",
+                                          style: TextStyle(
+                                            color: cartItem.maxQty > 0
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          ' | ${cartItem.nameOfColor} | ',
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                         ),
@@ -407,8 +427,9 @@ class ControllProductQty extends StatelessWidget {
       child: currentCartItem == null
           ? FilledButton(
               onPressed: () {
-                cartItem.incrementQty(cartItem.maxQty);
+                cartItem.incrementQty();
                 cart.addNewToCart(cartItem);
+
                 showSnackBar(context, "تم الإضافة إلى السلة");
               },
               child: const Text("أضف"),
@@ -418,18 +439,17 @@ class ControllProductQty extends StatelessWidget {
               children: [
                 IconButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: cart.isCartValid
+                  onPressed: currentCartItem!.qty >= cartItem.maxQty ||
+                          currentCartItem!.overQty
                       ? null
-                      : cartItem.qty >= cartItem.maxQty || cartItem.overQty
-                          ? null
-                          : () {
-                              cart.addQtyToExistedCartItem(
-                                cartItem.skuId,
-                                cartItem.maxQty,
-                                context,
-                              );
-                              showSnackBar(context, "تم تحديث السلة");
-                            },
+                      : () {
+                          cart.addQtyToExistedCartItem(
+                            cartItem.skuId,
+                            cartItem.maxQty,
+                            context,
+                          );
+                          showSnackBar(context, "تم تحديث السلة");
+                        },
                   icon: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.primary.withOpacity(

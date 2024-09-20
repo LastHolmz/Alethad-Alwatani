@@ -23,15 +23,16 @@ class ColorCircle extends StatelessWidget {
 
     // If color is provided, return a small circle
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      // borderRadius: BorderRadius.circular(20),
       child: Container(
         width: width, // You can adjust the size
         height: height, // Adjust the size for the circle
-        color: color,
-        // decoration: BoxDecoration(
-        //   color: color, // Background color of the circle
-        //   // shape: BoxShape.circle, // Makes it a circle
-        // ),
+
+        decoration: BoxDecoration(
+          color: color, // Background color of the circle
+          shape: BoxShape.rectangle, // Makes it a circle
+          borderRadius: BorderRadius.circular(radius),
+        ),
       ),
     );
   }

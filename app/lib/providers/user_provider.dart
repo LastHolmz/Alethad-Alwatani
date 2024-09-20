@@ -46,15 +46,24 @@ class UserProvider extends ChangeNotifier {
       _user = User.fromJson(userData);
       _isLoggedIn = true;
       _isLoading = false;
-      notifyListeners();
       await updateToken(user?.token ?? "");
       context.pushReplacement('/');
     } else {
       setUser(null);
       _isLoggedIn = false;
       _isLoading = false;
-      notifyListeners();
     }
+    notifyListeners();
+    print('###########');
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
+    debugPrint(isLoggedIn.toString());
   }
 
   Future<void> logout(BuildContext context) async {

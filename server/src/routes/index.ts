@@ -3,6 +3,7 @@ import productsRouters from "./products";
 import skusRouters from "./skus";
 import categoriesRouters from "./categories";
 import brandsRouters from "./brands";
+import ordersRouters from "./orders";
 
 export {
   authRouters,
@@ -10,4 +11,5 @@ export {
   skusRouters,
   categoriesRouters,
   brandsRouters,
+  ordersRouters,
 };

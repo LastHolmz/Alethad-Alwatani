@@ -45,15 +45,9 @@ class CartItem {
     maxQty = qty;
   }
 
-  void incrementQty(int? maxValue) {
-    if (maxValue != null) {
-      if (qty < maxValue) {
-        qty++;
-      }
-    } else {
-      if (qty < maxQty) {
-        qty++;
-      }
+  void incrementQty() {
+    if (qty < this.maxQty) {
+      qty++;
     }
   }
 
