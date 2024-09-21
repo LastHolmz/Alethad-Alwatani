@@ -1,11 +1,11 @@
 import 'package:e_commerce/common/widgets/wrapper.dart';
 import 'package:e_commerce/screens/auth/sign_up.dart';
 import 'package:e_commerce/screens/cart/index.dart';
-import 'package:e_commerce/screens/home/index.dart';
+import 'package:e_commerce/screens/home/home_screen.dart';
 import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:e_commerce/screens/orders/orders_screen.dart';
 import 'package:e_commerce/screens/products/id/index.dart';
-import 'package:e_commerce/screens/profile/index.dart';
+import 'package:e_commerce/screens/products/products_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,6 +66,16 @@ class AppNavigation {
             ],
           ),
           StatefulShellBranch(
+            navigatorKey: _rootNavigatorProfile,
+            routes: [
+              GoRoute(
+                name: ProductsScreen.name,
+                path: ProductsScreen.path,
+                builder: (context, state) => ProductsScreen(key: state.pageKey),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
             navigatorKey: _rootNavigatorBills,
             routes: [
               GoRoute(
@@ -75,16 +85,7 @@ class AppNavigation {
               ),
             ],
           ),
-          StatefulShellBranch(
-            navigatorKey: _rootNavigatorProfile,
-            routes: [
-              GoRoute(
-                name: ProfileSceen.name,
-                path: ProfileSceen.path,
-                builder: (context, state) => ProfileSceen(key: state.pageKey),
-              ),
-            ],
-          ),
+
           StatefulShellBranch(
             navigatorKey: _rootNavigatorCart,
             routes: [

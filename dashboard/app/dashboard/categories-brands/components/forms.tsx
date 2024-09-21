@@ -136,7 +136,7 @@ export const NewBrandForm = ({ data }: { data: Category[] }) => {
     <AccssibleDialogForm
       success="تم الإنشاء بنجاح"
       trigger={
-        <Button variant={"outline"} className="mr-2">
+        <Button className="mr-2">
           براند جديد <TbCategoryPlus className="ml-2 h-4 w-4" />
         </Button>
       }
@@ -288,13 +288,3 @@ export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
     </AccssibleDialogForm>
   );
 };
-
-// export const UpdateCategories = ({ data }: { data: Category[] }) => {
-//   const [_, setCategories] = useLocalStorage("categories", data);
-
-//   useEffect(() => {
-//     setCategories(data);
-//   }, [data]);
-
-//   return null;
-// };

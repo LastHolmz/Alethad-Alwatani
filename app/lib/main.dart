@@ -25,6 +25,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => OrdersProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => SearchProvider(),
+        ),
       ],
       child: const App(),
     ),

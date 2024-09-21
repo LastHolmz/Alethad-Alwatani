@@ -54,16 +54,6 @@ class UserProvider extends ChangeNotifier {
       _isLoading = false;
     }
     notifyListeners();
-    print('###########');
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
-    debugPrint(isLoggedIn.toString());
   }
 
   Future<void> logout(BuildContext context) async {

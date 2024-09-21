@@ -22,7 +22,6 @@ class OrderService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> body = json.decode(response.body);
         final dynamic orderData = body["data"];
-        print(orderData);
         final Order newOrder = Order.fromJson(orderData);
         return newOrder;
       }

@@ -1,6 +1,7 @@
 import NavigationRail from "./components/naviagation-rail";
 import "../globals.css";
 import { Metadata } from "next";
+import { revalidateTag } from "next/cache";
 // import Header from "./components/header";
 // import { redirection } from "@/lib/role-access-server";
 
@@ -22,6 +23,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   //     ],
   //     redirectLink: "/sign-in",
   //   });
+  // revalidateTag("products");
+  // revalidateTag("categories");
 
   return (
     <main
