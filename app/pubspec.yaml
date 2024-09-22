@@ -40,5 +40,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo.png
+    - assets/
 # Lint rules and formatting settings can be adjusted in analysis_options.yaml

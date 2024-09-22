@@ -2,6 +2,7 @@ import 'package:e_commerce/providers/cart_provider.dart';
 import 'package:e_commerce/providers/orders_provider.dart';
 import 'package:e_commerce/providers/products_provider.dart';
 import 'package:e_commerce/providers/user_provider.dart';
+import 'package:e_commerce/providers/vistits_provider.dart';
 import 'package:e_commerce/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (context) => VisitProvider(),
+        ),
         ChangeNotifierProvider(
           create: (context) => CategoriesProvider(),
         ),
@@ -45,11 +49,10 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      Duration.zero,
-      () async => context.read<UserProvider>().checkUser(context),
+
+    Future.microtask(
+      () async => await context.read<CartProvider>().fetchAtFirst(),
     );
-    Future.microtask(() => context.read<CartProvider>().fetchAtFirst());
   }
 
   @override

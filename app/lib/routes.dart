@@ -1,4 +1,5 @@
 import 'package:e_commerce/common/widgets/wrapper.dart';
+import 'package:e_commerce/screens/auth/login.dart';
 import 'package:e_commerce/screens/auth/sign_up.dart';
 import 'package:e_commerce/screens/cart/index.dart';
 import 'package:e_commerce/screens/home/home_screen.dart';
@@ -6,6 +7,7 @@ import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:e_commerce/screens/orders/orders_screen.dart';
 import 'package:e_commerce/screens/products/id/index.dart';
 import 'package:e_commerce/screens/products/products_screen.dart';
+import 'package:e_commerce/screens/welcome/welcome_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -40,6 +42,18 @@ class AppNavigation {
         path: SingUpScreen.path,
         builder: (context, state) {
           return SingUpScreen();
+        },
+      ),
+      GoRoute(
+        path: LoginScreen.path,
+        builder: (context, state) {
+          return LoginScreen();
+        },
+      ),
+      GoRoute(
+        path: WelcomeScreen.path,
+        builder: (context, state) {
+          return WelcomeScreen();
         },
       ),
       GoRoute(

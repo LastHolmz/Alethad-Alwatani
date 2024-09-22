@@ -16,9 +16,9 @@ import 'package:provider/provider.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
   static const List<String> images = [
-    'https://images.unsplash.com/photo-1713105227378-91e790dfe4f0?q=80&w=1376&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1713042451651-42cecb8a2e19?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1713148312902-bd3105e11b2a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+    "https://plus.unsplash.com/premium_photo-1677526496597-aa0f49053ce2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1591019479261-1a103585c559?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1617221078682-5f4feaa1f419?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   ];
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -84,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
         child: Scaffold(
-          backgroundColor: Colors.white,
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
@@ -251,17 +250,15 @@ class CategoryCard extends StatelessWidget {
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
-              // Black overlay with opacity
-
-              // Title on top of the black overlay
               const SizedBox(height: 10),
               Center(
                 child: Text(
                   category.title,
                   style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black87),
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black87,
+                  ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                 ),

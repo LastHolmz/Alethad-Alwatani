@@ -1,6 +1,11 @@
+import 'package:e_commerce/providers/user_provider.dart';
+import 'package:e_commerce/providers/vistits_provider.dart';
+import 'package:e_commerce/screens/welcome/welcome_screen.dart';
+
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({super.key, required this.navigationShell});
@@ -20,52 +25,64 @@ class _WrapperState extends State<Wrapper> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        bottomNavigationBar: FlashyTabBar(
-          selectedIndex: _selectedIndex,
-          showElevation: true,
-          onItemSelected: (index) => setState(() {
-            setState(() {
-              _selectedIndex = index;
-            });
-            _goToBranch(_selectedIndex);
-          }),
-          items: [
-            FlashyTabBarItem(
-              icon: const Icon(Icons.home_outlined),
-              title: const Text('الرئيسية'),
-            ),
-            FlashyTabBarItem(
-              icon: const Icon(Icons.search),
-              title: const Text('البحث'),
-            ),
-            FlashyTabBarItem(
-              icon: const Badge(child: Icon(Icons.description_outlined)),
-              title: const Text('الفواتير'),
-            ),
-            // FlashyTabBarItem(
-            //   icon: const Icon(Icons.person_3_outlined),
-            //   title: const Text('البروفايل'),
-            // ),
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () async => context.read<UserProvider>().checkUser(context),
+    );
+    Future.microtask(() => context.read<VisitProvider>().runAtFirst());
+  }
 
-            FlashyTabBarItem(
-              icon: const Badge(
-                label: const Text('2'),
-                child: Icon(Icons.shopping_cart_outlined),
-              ),
-              title: const Text('السلة'),
-            ),
-          ],
-        ),
-        body: SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: widget.navigationShell,
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<VisitProvider>(
+      builder: (context, value, child) {
+        final bool isFirstVisit = value.firstVisit;
+        return isFirstVisit
+            ? WelcomeScreen()
+            : Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  bottomNavigationBar: FlashyTabBar(
+                    selectedIndex: _selectedIndex,
+                    showElevation: true,
+                    onItemSelected: (index) => setState(() {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                      _goToBranch(_selectedIndex);
+                    }),
+                    items: [
+                      FlashyTabBarItem(
+                        icon: const Icon(Icons.home_outlined),
+                        title: const Text('الرئيسية'),
+                      ),
+                      FlashyTabBarItem(
+                        icon: const Icon(Icons.search),
+                        title: const Text('البحث'),
+                      ),
+                      FlashyTabBarItem(
+                        icon: const Badge(
+                            child: Icon(Icons.description_outlined)),
+                        title: const Text('الفواتير'),
+                      ),
+                      FlashyTabBarItem(
+                        icon: const Badge(
+                          label: const Text('2'),
+                          child: Icon(Icons.shopping_cart_outlined),
+                        ),
+                        title: const Text('السلة'),
+                      ),
+                    ],
+                  ),
+                  body: SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: widget.navigationShell,
+                  ),
+                ),
+              );
+      },
     );
   }
 }

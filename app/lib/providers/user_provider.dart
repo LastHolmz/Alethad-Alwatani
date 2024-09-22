@@ -47,7 +47,7 @@ class UserProvider extends ChangeNotifier {
       _isLoggedIn = true;
       _isLoading = false;
       await updateToken(user?.token ?? "");
-      context.pushReplacement('/');
+      context.push('/');
     } else {
       setUser(null);
       _isLoggedIn = false;
