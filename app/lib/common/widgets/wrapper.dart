@@ -1,5 +1,6 @@
 import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/providers/vistits_provider.dart';
+import 'package:e_commerce/screens/auth/auth.dart';
 import 'package:e_commerce/screens/welcome/welcome_screen.dart';
 
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
@@ -40,9 +41,145 @@ class _WrapperState extends State<Wrapper> {
         final bool isFirstVisit = value.firstVisit;
         return isFirstVisit
             ? WelcomeScreen()
+            // return !isFirstVisit
+            //     ? const Auth()
             : Directionality(
                 textDirection: TextDirection.rtl,
                 child: Scaffold(
+                  drawer: Drawer(
+                    // Add a ListView to the drawer. This ensures the user can scroll
+                    // through the options in the drawer if there isn't enough vertical
+                    // space to fit everything.
+                    child: ListView(
+                      // Important: Remove any padding from the ListView.
+                      padding: EdgeInsets.zero,
+
+                      children: [
+                        DrawerHeader(
+                          decoration: const BoxDecoration(
+                              // color: Colors.blue,
+                              ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/logo.png',
+                              alignment: Alignment.centerLeft,
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Consumer<UserProvider>(
+                          builder: (context, value, child) {
+                            final _isloding = value.isLoading;
+
+                            return value.user != null
+                                ? ListTile(
+                                    title: const Text('تسجيل الخروج'),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return _isloding
+                                              ? const AlertDialog(
+                                                  content: SizedBox(
+                                                    height: 100,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        CircularProgressIndicator
+                                                            .adaptive(),
+                                                        SizedBox(height: 20),
+                                                        Text("جاري التحميل"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : AlertDialog(
+                                                  // titlePadding: EdgeInsets.all(),
+                                                  actions: [
+                                                    Row(
+                                                      children: [
+                                                        TextButton(
+                                                          style: TextButton
+                                                              .styleFrom(
+                                                            textStyle: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .labelLarge,
+                                                          ),
+                                                          child:
+                                                              const Text('نعم'),
+                                                          onPressed: () async {
+                                                            value.setLodding(
+                                                                true);
+                                                            // await context
+                                                            //     .read<UserProvider>()
+                                                            //     .logout();
+                                                            value.logout();
+                                                            value.setLodding(
+                                                                false);
+
+                                                            // Navigator.of(context).pop();
+                                                            context.pop();
+                                                            Scaffold.of(context)
+                                                                .closeDrawer();
+                                                            // context.go(HomeScreen.path);
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          style: TextButton
+                                                              .styleFrom(
+                                                            textStyle: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .labelLarge,
+                                                          ),
+                                                          child:
+                                                              const Text('لا'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                  title: const Text(
+                                                    "تسجيل الخروج",
+                                                    textAlign: TextAlign.end,
+                                                  ),
+                                                  content: const Text(
+                                                    "هل انت متأكد من تسجيل الخروج",
+                                                    textAlign: TextAlign.end,
+                                                  ),
+                                                );
+                                        },
+                                      );
+                                    },
+                                  )
+                                : ListTile(
+                                    title: const Text("تسجيل الدخول"),
+                                    onTap: () => context.go(Auth.path),
+                                  );
+                          },
+                        ),
+                        ListTile(
+                          title: const Text('سياسة الخصوصية'),
+                          onTap: () {
+                            // Update the state of the app.
+                            // ...
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                   bottomNavigationBar: FlashyTabBar(
                     selectedIndex: _selectedIndex,
                     showElevation: true,
@@ -54,19 +191,27 @@ class _WrapperState extends State<Wrapper> {
                     }),
                     items: [
                       FlashyTabBarItem(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        inactiveColor: Colors.black,
                         icon: const Icon(Icons.home_outlined),
                         title: const Text('الرئيسية'),
                       ),
                       FlashyTabBarItem(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        inactiveColor: Colors.black,
                         icon: const Icon(Icons.search),
                         title: const Text('البحث'),
                       ),
                       FlashyTabBarItem(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        inactiveColor: Colors.black,
                         icon: const Badge(
                             child: Icon(Icons.description_outlined)),
                         title: const Text('الفواتير'),
                       ),
                       FlashyTabBarItem(
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        inactiveColor: Colors.black,
                         icon: const Badge(
                           label: const Text('2'),
                           child: Icon(Icons.shopping_cart_outlined),

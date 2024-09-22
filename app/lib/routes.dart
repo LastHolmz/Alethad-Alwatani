@@ -1,4 +1,5 @@
 import 'package:e_commerce/common/widgets/wrapper.dart';
+import 'package:e_commerce/screens/auth/auth.dart';
 import 'package:e_commerce/screens/auth/login.dart';
 import 'package:e_commerce/screens/auth/sign_up.dart';
 import 'package:e_commerce/screens/cart/index.dart';
@@ -36,6 +37,12 @@ class AppNavigation {
         builder: (context, state) {
           final id = state.pathParameters['id']; // Get "id" param from URL
           return ProductDetails(id: id);
+        },
+      ),
+      GoRoute(
+        path: Auth.path,
+        builder: (context, state) {
+          return const Auth();
         },
       ),
       GoRoute(

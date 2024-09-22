@@ -1,18 +1,23 @@
 import 'package:e_commerce/models/user.dart';
 import 'package:e_commerce/providers/user_provider.dart';
-import 'package:e_commerce/services/user_service.dart';
+import 'package:e_commerce/screens/auth/sign_up.dart';
+import 'package:e_commerce/screens/home/home_screen.dart';
+import 'package:e_commerce/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gsform/gs_form/core/form_style.dart';
-import 'package:gsform/gs_form/model/data_model/spinner_data_model.dart';
+import 'package:gsform/gs_form/enums/field_status.dart';
 import 'package:gsform/gs_form/widget/field.dart';
 import 'package:gsform/gs_form/widget/form.dart';
-import 'package:gsform/gs_form/widget/section.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({key}) : super(key: key);
+  String? value;
   static const String path = "/login";
   static const String name = "login";
+  late GSFieldStatusEnum status;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,15 +25,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late GSForm form;
-  final UserService _userService = UserService();
+  UserService _userService = UserService();
 
   @override
   void initState() {
+    widget.status = GSFieldStatusEnum.normal;
     super.initState();
   }
 
-  Future<void> createNewUser(User user) async {
-    final newUser = await _userService.register(user, context);
+  Future<void> login(User user) async {
+    final newUser = await _userService.login(user, context);
     if (newUser != null) {
       await context.read<UserProvider>().checkUser(context, newUser.token);
     }
@@ -40,170 +46,107 @@ class _LoginScreenState extends State<LoginScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('إنشاء حساب جديد'),
+          title: const Text('تسجيل الدخول'),
+          centerTitle: true,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextButton(
+                onPressed: () {
+                  context.go(HomeScreen.path);
+                },
+                child: const Text("تخطي"),
+              ),
+            )
+          ],
         ),
         body: Padding(
-          padding: const EdgeInsets.only(left: 12.0, right: 12, top: 24),
-          child: Consumer<UserProvider>(
-            builder: (context, value, child) {
-              final isLoading = value.isLoading;
-              return isLoading
-                  ? const Center(child: CircularProgressIndicator.adaptive())
-                  : Column(
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: form = GSForm.multiSection(
-                              context,
-                              style: GSFormStyle(
-                                titleStyle: const TextStyle(fontSize: 16),
-                                fieldTextStyle: const TextStyle(fontSize: 16),
-                                sectionCardPadding: 12,
-                              ),
-                              sections: [
-                                GSSection(
-                                    sectionTitle: 'بياناتك',
-                                    // style: GSFormStyle(sectionCardPadding: 12),
-                                    fields: [
-                                      GSField.text(
-                                        value: 'ادخل اسمك الثلاثي',
-                                        tag: 'fullName',
-                                        title: 'الاسم الثلاثي',
-                                        minLine: 1,
-                                        maxLine: 1,
-                                        required: true,
-                                      ),
-                                      GSField.number(
-                                        tag: 'age',
-                                        value: '18',
-                                        title: 'عمرك',
-                                        required: true,
-                                      ),
-                                      GSField.password(
-                                        tag: 'password',
-                                        title: 'كلمة السر',
-                                        maxLength: 11,
-                                        value: 'انشىء كلمة السر',
-                                        required: true,
-                                        errorMessage: 'يجب ادخال رقم الشركة',
-                                      ),
-                                      GSField.spinner(
-                                        tag: 'gender',
-                                        required: true,
-                                        weight: 6,
-                                        title: 'الجنس',
-                                        value: SpinnerDataModel(
-                                          name: 'رجل',
-                                          id: 1,
-                                          data: "man",
-                                        ),
-                                        onChange: (model) {},
-                                        items: [
-                                          SpinnerDataModel(
-                                            name: 'رجل',
-                                            id: 1,
-                                            data: "man",
-                                          ),
-                                          SpinnerDataModel(
-                                            name: 'امراة',
-                                            id: 2,
-                                            data: "woman",
-                                          ),
-                                        ],
-                                      ),
-                                      GSField.mobile(
-                                        tag: 'mobile',
-                                        title: 'هاتفك الشخصي',
-                                        maxLength: 10,
-                                        helpMessage: '921234123',
-                                        weight: 6,
-                                        required: true,
-                                        errorMessage:
-                                            'يجب ادخال رقم هاتفك الشخصي',
-                                      ),
-                                    ]),
-                                GSSection(
-                                  sectionTitle: 'معلومات شركتك',
-                                  style: GSFormStyle(),
-                                  fields: [
-                                    GSField.text(
-                                      tag: 'companyTitle',
-                                      title: 'اسم الشركة',
-                                      minLine: 1,
-                                      maxLine: 1,
-                                      weight: 12,
-                                      required: true,
-                                      errorMessage: 'يجب ادخال اسم الشركة',
-                                    ),
-                                    GSField.mobile(
-                                      tag: 'componeyMobile',
-                                      title: 'رقم الشركة',
-                                      maxLength: 11,
-                                      helpMessage: '921112223',
-                                      required: true,
-                                      errorMessage: 'يجب ادخال رقم الشركة',
-                                    ),
-                                    GSField.textPlain(
-                                      hint: 'معلومات الموقع',
-                                      tag: 'location',
-                                      title: 'موقع الشركة',
-                                      maxLine: 4,
-                                      maxLength: 233,
-                                      showCounter: false,
-                                      weight: 12,
-                                      prefixWidget: const Icon(
-                                        Icons.location_city,
-                                        color: Colors.blue,
-                                      ),
-                                      required: false,
-                                    ),
-                                  ],
-                                ),
-                              ],
+          padding: const EdgeInsets.all(0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: form = GSForm.singleSection(
+                        style: GSFormStyle(
+                          sectionCardPadding: 20,
+                          titleStyle: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        context,
+                        fields: [
+                          GSField.mobile(
+                            tag: 'mobile',
+                            title: 'رقم الهاتف',
+                            weight: 12,
+                            required: true,
+                            maxLength: 100,
+                            errorMessage: 'يجب ملء رقم الهاتف',
+                            hint: "ادخل رقم الهاتف",
+                            prefixWidget: const Icon(
+                              Icons.phone_android,
+                              size: 18,
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: FilledButton(
-                                  onPressed: () async {
-                                    bool isValid = form.isValid();
-                                    if (!isValid) {
-                                      return;
-                                    }
-                                    Map<String, dynamic> map = form.onSubmit();
-                                    // debugPrint(isValid.toString());
-                                    // debugPrint(map.toString());
-                                    SpinnerDataModel gender = map["gender"];
-
-                                    await createNewUser(User(
-                                      id: '',
-                                      fullName: map["fullName"],
-                                      password: map["password"],
-                                      companyTitle: map["companyTitle"],
-                                      createdAt: DateTime.now(),
-                                      updatedAt: DateTime.now(),
-                                      gender:
-                                          User.getGenderFromString(gender.data),
-                                      location: map["location"],
-                                      mobile: int.parse(map["mobile"]),
-                                      componeyMobile:
-                                          int.parse(map["componeyMobile"]),
-                                    ));
-                                  },
-                                  child: const Text('إنشاء الحساب'),
-                                ),
-                              ),
-                            ],
+                          GSField.password(
+                            tag: 'password',
+                            title: 'كلمة السر',
+                            weight: 12,
+                            required: true,
+                            maxLength: 100,
+                            errorMessage: 'يجب ملء كلمة السر',
+                            hint: "ادخل كلمة السر",
+                            prefixWidget: const Icon(
+                              Icons.password,
+                              size: 18,
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-            },
+                          const SizedBox(height: 10),
+                          FilledButton(
+                            onPressed: () async {
+                              bool isValid = form.isValid();
+                              if (!isValid) {
+                                return;
+                              }
+                              Map<String, dynamic> map = form.onSubmit();
+
+                              await login(
+                                User(
+                                  id: '',
+                                  fullName: '',
+                                  password: map["password"],
+                                  companyTitle: '',
+                                  createdAt: DateTime.now(),
+                                  updatedAt: DateTime.now(),
+                                  gender: Gender.man,
+                                  location: '',
+                                  mobile: int.parse(map["mobile"]),
+                                  componeyMobile: 0,
+                                ),
+                              );
+                            },
+                            child: const Text("تسجيل الدخول"),
+                          ),
+                          const SizedBox(height: 5),
+                          TextButton(
+                            onPressed: () {
+                              context.push(SingUpScreen.path);
+                            },
+                            child: const Text("إنشاء حساب"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

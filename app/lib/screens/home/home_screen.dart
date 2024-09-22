@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/common/widgets/products_grid.dart';
 
@@ -5,6 +7,8 @@ import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/brand.dart';
 import 'package:e_commerce/providers/products_provider.dart';
+import 'package:e_commerce/providers/user_provider.dart';
+import 'package:e_commerce/screens/auth/auth.dart';
 import 'package:e_commerce/screens/products/products_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,34 +94,59 @@ class _HomeScreenState extends State<HomeScreen>
               SliverAppBar(
                 key: const PageStorageKey("/home"),
                 actions: [
-                  Image.asset(
-                    'assets/logo.png',
-                    alignment: Alignment.centerLeft,
-                    width: 200,
-                    height: 100,
-                    fit: BoxFit.fitHeight,
+                  IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    icon: const Icon(Icons.menu_outlined),
                   ),
                 ],
-                title: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      "اهلا, محمد",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    Text('عن ماذا تبحث اليوم ؟', style: TextStyle(fontSize: 16))
-                  ],
-                ),
+
+                leadingWidth: 0,
+                leading: const SizedBox.shrink(),
+                title: Consumer<UserProvider>(builder: (context, value, child) {
+                  final _isLoading = value.isLoading;
+                  final _user = value.user;
+                  return _isLoading
+                      ? const Text("جاري التحميل")
+                      : _user == null
+                          ? TextButton.icon(
+                              onPressed: () {
+                                context.go(Auth.path);
+                              },
+                              icon: const Text("تسجيل الدخول"),
+                              label: Transform.rotate(
+                                angle: pi,
+                                child: const Icon(
+                                  Icons.login,
+                                ),
+                              ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  "اهلا, ${_user.fullName}",
+                                  style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Text(
+                                  'عن ماذا تبحث اليوم ؟',
+                                  style: TextStyle(fontSize: 16),
+                                )
+                              ],
+                            );
+                }),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(60),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: CupertinoSearchTextField(
                       onTap: () {
-                        context.push(ProductsScreen.path);
+                        context.go(ProductsScreen.path);
                         FocusScope.of(context).unfocus();
                         _controller.clear();
                       },
@@ -125,7 +154,9 @@ class _HomeScreenState extends State<HomeScreen>
                       suffixIcon: const Icon(CupertinoIcons.search),
                       prefixIcon: _controller.value.text.isEmpty
                           ? const Text('')
-                          : const Icon(CupertinoIcons.xmark_circle_fill),
+                          : const Icon(
+                              CupertinoIcons.xmark_circle_fill,
+                            ),
                       controller: _controller,
                       placeholder: 'ابحث هنا',
                     ),

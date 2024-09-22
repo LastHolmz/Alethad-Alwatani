@@ -3,6 +3,7 @@ import { BadRequestError } from "../../errors";
 import prisma from "../../../prisma/db";
 import DuplicatedError from "../../errors/duplicated-request";
 import {
+  comparePassword,
   hashPassword,
   validateFullName,
   validatePassword,
@@ -21,7 +22,88 @@ import ResponseHelper from "../../middlewares/response.helper";
  * @throws {DuplicatedError} If a user with the provided phone number already exists.
  * @returns {Promise<Response>} The response object with the registration status.
  */
-const register = async (req: Request, res: Response): Promise<Response> => {
+const login = async (req: Request, res: Response) => {
+  const responseHelper = new ResponseHelper(res);
+
+  try {
+    const {
+      password,
+      mobile,
+    }: {
+      mobile: number;
+      password: string;
+    } = req.body;
+    // console.log(req.body);
+
+    // Validate required fields
+    if (!mobile || !password) {
+      return responseHelper.error("يجب ملء كل الحقول", 400);
+    }
+
+    // Validate full name length
+    // if (!validateFullName(fullName)) {
+    //   throw new BadRequestError("يجب أن يكون الاسم الكامل على الأقل 10 أحرف");
+    // }
+
+    // Validate password length
+    // if (!validatePassword(password)) {
+    //   throw new BadRequestError("يجب أن يكون طول كلمة المرور 8 أحرف على الأقل");
+    // }
+
+    // Validate phone number format
+    // if (!validatePhoneNumber(mobile)) {
+    //   throw new BadRequestError(
+    //     "رقم الهاتف غير صالح، يجب أن يبدأ بـ 092 أو 93 أو 94 أو 093 أو 091 أو 92 ويتبعه 7 أرقام"
+    //   );
+    // }
+    // // Validate phone number format
+    // if (!validatePhoneNumber(componeyMobile)) {
+    //   throw new BadRequestError(
+    //     "رقم الهاتف غير صالح، يجب أن يبدأ بـ 092 أو 93 أو 94 أو 093 أو 091 أو 92 ويتبعه 7 أرقام"
+    //   );
+    // }
+
+    // Check if user already exists
+    const user = await prisma.user.findUnique({
+      where: {
+        mobile,
+      },
+    });
+
+    if (!user) {
+      return responseHelper.error("هذا المستخدم غير موجود ", 404);
+    }
+
+    const comparePassowrd = comparePassword({
+      hashedPassword: user.password,
+      password,
+    });
+
+    if (!comparePassowrd) {
+      return responseHelper.error("كلمة المرور غير متطابقة", 403);
+    }
+
+    const token = generateJwtToken({
+      fullName: user.fullName,
+      role: user.role,
+      status: user.status,
+      userId: user.id,
+    });
+    return res.status(200).json({
+      message: "تم تسجيل الدخول",
+      data: {
+        ...user,
+        token,
+      },
+    });
+  } catch (error) {
+    console.error(error); // Use console.error for error logging
+    return res.status(500).json({ message: "INTERNAL_SERVER_ERROR" });
+  }
+};
+
+const register = async (req: Request, res: Response) => {
+  const responseHelper = new ResponseHelper(res);
   try {
     const {
       fullName,
@@ -51,17 +133,23 @@ const register = async (req: Request, res: Response): Promise<Response> => {
       !password ||
       !componeyMobile
     ) {
-      throw new BadRequestError("يجب ملء كل الحقول");
+      return responseHelper.error("يجب ملء كل الحقول", 400);
     }
 
     // Validate full name length
     if (!validateFullName(fullName)) {
-      throw new BadRequestError("يجب أن يكون الاسم الكامل على الأقل 10 أحرف");
+      return responseHelper.error(
+        "يجب أن يكون الاسم الكامل على الأقل 10 أحرف",
+        400
+      );
     }
 
     // Validate password length
     if (!validatePassword(password)) {
-      throw new BadRequestError("يجب أن يكون طول كلمة المرور 8 أحرف على الأقل");
+      return responseHelper.error(
+        "يجب أن يكون طول كلمة المرور 8 أحرف على الأقل",
+        400
+      );
     }
 
     // Validate phone number format
@@ -85,7 +173,7 @@ const register = async (req: Request, res: Response): Promise<Response> => {
     });
 
     if (existedUser) {
-      throw new DuplicatedError("هذا المستخدم موجود مسبقاً");
+      return responseHelper.error("هذا المستخدم موجود مسبقاً", 409);
     }
 
     // Hash the password
@@ -105,7 +193,7 @@ const register = async (req: Request, res: Response): Promise<Response> => {
     });
 
     if (!user) {
-      throw new BadRequestError("فشل إنشاء المستخدم");
+      return responseHelper.error("فشل إنشاء المستخدم", 400);
     }
 
     const token = generateJwtToken({
@@ -141,7 +229,7 @@ const checkToken = async (req: Request, res: Response) => {
     if (!decodedToken) {
       return responseHelper.error("must to provide a proper token", 400);
     }
-    console.log(decodedToken);
+    // console.log(decodedToken);
 
     const user = await prisma.user.findUnique({
       where: { id: decodedToken.user.userId },
@@ -168,4 +256,4 @@ const checkToken = async (req: Request, res: Response) => {
   }
 };
 
-export { register, checkToken };
+export { register, checkToken, login };

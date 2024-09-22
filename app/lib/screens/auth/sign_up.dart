@@ -1,6 +1,6 @@
 import 'package:e_commerce/models/user.dart';
 import 'package:e_commerce/providers/user_provider.dart';
-import 'package:e_commerce/services/user_service.dart';
+import 'package:e_commerce/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:gsform/gs_form/core/form_style.dart';
 import 'package:gsform/gs_form/model/data_model/spinner_data_model.dart';
@@ -180,20 +180,22 @@ class _SingUpScreenState extends State<SingUpScreen> {
                                     // debugPrint(map.toString());
                                     SpinnerDataModel gender = map["gender"];
 
-                                    await createNewUser(User(
-                                      id: '',
-                                      fullName: map["fullName"],
-                                      password: map["password"],
-                                      companyTitle: map["companyTitle"],
-                                      createdAt: DateTime.now(),
-                                      updatedAt: DateTime.now(),
-                                      gender:
-                                          User.getGenderFromString(gender.data),
-                                      location: map["location"],
-                                      mobile: int.parse(map["mobile"]),
-                                      componeyMobile:
-                                          int.parse(map["componeyMobile"]),
-                                    ));
+                                    await createNewUser(
+                                      User(
+                                        id: '',
+                                        fullName: map["fullName"],
+                                        password: map["password"],
+                                        companyTitle: map["companyTitle"],
+                                        createdAt: DateTime.now(),
+                                        updatedAt: DateTime.now(),
+                                        gender: User.getGenderFromString(
+                                            gender.data),
+                                        location: map["location"],
+                                        mobile: int.parse(map["mobile"]),
+                                        componeyMobile:
+                                            int.parse(map["componeyMobile"]),
+                                      ),
+                                    );
                                   },
                                   child: const Text('إنشاء الحساب'),
                                 ),

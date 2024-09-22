@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:e_commerce/constants/global_variables.dart';
 import 'package:e_commerce/models/user.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,11 @@ class UserProvider extends ChangeNotifier {
   User? get user => _user;
   void setUser(User? user) {
     _user = user;
+    notifyListeners();
+  }
+
+  void setLodding(bool val) {
+    _isLoading = val;
     notifyListeners();
   }
 
@@ -56,31 +60,23 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> logout(BuildContext context) async {
+  Future<void> logout() async {
     _user = null;
-    _isLoggedIn = true;
-    await updateToken("");
+    _isLoggedIn = false;
+    _isLoading = true;
     notifyListeners();
-    if (!context.mounted) {
-      return;
-    }
-    context.pushReplacement('/login');
-  }
 
-  // Future<void> fetchAtFirst() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? cartJson = prefs.getString('cart');
-  //   // if no data stored
-  //   if (cartJson != null && cartJson.isNotEmpty) {
-  //     //! ### add api call to check products found or not in company
-  //     List decodedCartItems = json.decode(cartJson);
-  //     List<CartItem> listOfCartItems =
-  //         decodedCartItems.map((e) => CartItem.fromJson(e)).toList();
-  //     // set the list of cart founded
-  //     _cart = listOfCartItems;
-  //     notifyListeners();
-  //   }
-  // }
+    await updateToken("");
+
+    _isLoading = false;
+
+    notifyListeners();
+
+    // if (!context.mounted) {
+    //   return;
+    // }
+    // context.push('/login');
+  }
 
   Future<void> updateToken(String? token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

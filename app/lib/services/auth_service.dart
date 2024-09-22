@@ -36,4 +36,37 @@ class UserService {
       return null;
     }
   }
+
+  Future<User?> login(User user, BuildContext context) async {
+    Uri uri = apiUri('auth/login');
+    final token = await getStoredToken();
+    // user in json format
+    String userJson = json.encode(user.toJson());
+
+    final response = await post(
+      uri,
+      headers: headers(token),
+      body: userJson,
+    );
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> body = json.decode(response.body);
+        final dynamic userData = body["data"];
+        final User newUser = User.fromJson(userData);
+        if (context.mounted) {
+          showSnackBar(context, json.decode(response.body)["message"]);
+        }
+        return newUser;
+      }
+      if (context.mounted) {
+        showSnackBar(context, json.decode(response.body)["message"]);
+      }
+      return null;
+    } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context, json.decode(response.body)["message"]);
+      }
+      return null;
+    }
+  }
 }
