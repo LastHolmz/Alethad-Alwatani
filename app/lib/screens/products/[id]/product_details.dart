@@ -6,7 +6,9 @@ import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
 import 'package:e_commerce/models/product.dart';
 import 'package:e_commerce/models/sku.dart';
+import 'package:e_commerce/models/user.dart';
 import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/services/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -67,22 +69,61 @@ class _ProductDetailsState extends State<ProductDetails> {
       child: RefreshIndicator.adaptive(
         onRefresh: () async => _fetchProduct(),
         child: Scaffold(
-          bottomNavigationBar: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: FilledButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  showDragHandle: false,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  context: context,
-                  builder: (context) => product != null
-                      ? buildAddToCartSheet(context: context, product: product!)
-                      : Container(), // Prevent showing bottom sheet if product is null
-                );
-              },
-              child: const Text("اضف إلى السلة"),
-            ),
+          bottomNavigationBar: Consumer<UserProvider>(
+            builder: (context, value, child) {
+              final user = value.user;
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: FilledButton(
+                  onPressed: user?.status != UserStatus.active
+                      ? () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    "اضافة للسلة",
+                                    textAlign: TextAlign.end,
+                                  ),
+                                  content: const Text(
+                                    "يجب توثيق حسابك, للتمكن من شراء المنتجات",
+                                    textAlign: TextAlign.end,
+                                  ),
+                                  actions: [
+                                    Row(
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            context.pop();
+                                          },
+                                          child: const Text(
+                                            "أفهم",
+                                            textAlign: TextAlign.end,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                );
+                              });
+                        }
+                      : () {
+                          showModalBottomSheet(
+                            showDragHandle: false,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) => product != null
+                                ? buildAddToCartSheet(
+                                    context: context, product: product!)
+                                : Container(), // Prevent showing bottom sheet if product is null
+                          );
+                        },
+                  child: const Text("اضف إلى السلة"),
+                ),
+              );
+            },
           ),
           appBar: AppBar(
             title: loading
@@ -123,12 +164,17 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
-                                    '${product?.price} دينار',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                    ),
+                                  Consumer<UserProvider>(
+                                    builder: (context, value, child) {
+                                      final user = value.user;
+                                      return Text(
+                                        '${user?.status == UserStatus.active ? product?.price : 0} دينار',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 10),
                                   const Divider(),

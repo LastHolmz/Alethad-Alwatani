@@ -92,34 +92,41 @@ class ProductCard extends StatelessWidget {
               Positioned(
                 bottom: 6,
                 left: 6,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      showDragHandle: false,
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (context) => buildAddToCartSheet(
-                        context: context,
-                        product: product,
+                child: Consumer<UserProvider>(
+                  builder: (context, value, child) {
+                    final user = value.user;
+                    return ElevatedButton(
+                      onPressed: user?.status != UserStatus.active
+                          ? null
+                          : () {
+                              showModalBottomSheet(
+                                showDragHandle: false,
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) => buildAddToCartSheet(
+                                  context: context,
+                                  product: product,
+                                ),
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(
+                          40,
+                          40,
+                        ), // Minimum size for the button
+                        padding: EdgeInsets.zero, // Remove default padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        size: 24,
+                        // color: Colors.white,
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(
-                      40,
-                      40,
-                    ), // Minimum size for the button
-                    padding: EdgeInsets.zero, // Remove default padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    size: 24,
-                    // color: Colors.white,
-                  ),
                 ),
               ),
             ],

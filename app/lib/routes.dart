@@ -2,9 +2,10 @@ import 'package:animations/animations.dart';
 import 'package:e_commerce/common/widgets/wrapper.dart';
 import 'package:e_commerce/screens/auth/login.dart';
 import 'package:e_commerce/screens/auth/sign_up.dart';
-import 'package:e_commerce/screens/cart/index.dart';
+import 'package:e_commerce/screens/cart/cart_screen.dart';
 import 'package:e_commerce/screens/category/category_screen.dart';
 import 'package:e_commerce/screens/home/home_screen.dart';
+import 'package:e_commerce/screens/orders/%5Bid%5D/order_details.dart';
 import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:e_commerce/screens/orders/orders_screen.dart';
 import 'package:e_commerce/screens/products/%5Bid%5D/product_details.dart';
@@ -48,6 +49,13 @@ class AppNavigation {
         },
       ),
       GoRoute(
+        path: '/orders/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']; // Get "id" param from URL
+          return OrderDetails(id: id);
+        },
+      ),
+      GoRoute(
         path: SingUpScreen.path,
         builder: (context, state) {
           return SingUpScreen();
@@ -76,6 +84,7 @@ class AppNavigation {
       //   path: ProductsScreen.path,
       //   builder: (context, state) => ProductsScreen(key: state.pageKey),
       // ),
+
       routeBaseSlideAnimatedSearchProducts(),
 
       StatefulShellRoute.indexedStack(

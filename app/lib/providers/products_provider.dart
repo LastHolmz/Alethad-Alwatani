@@ -117,9 +117,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _productServices.getProducts(
-        filterQuery,
-      );
+      final result = await _productServices.getProducts('');
       // ignore: unnecessary_null_comparison
       if (result != null) {
         _products = result;

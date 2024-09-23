@@ -6,6 +6,7 @@ import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/utility/clip_board.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -54,7 +55,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: CupertinoSearchTextField(
-                      
                       onSubmitted: (value) async {
                         if (value == " ") {
                           return;
@@ -138,7 +138,9 @@ class OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card.filled(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          context.push('/orders/${order.id}');
+        },
         onLongPress: () {
           copyToClipboard(order.barcode);
           showSnackBar(context, "تم نسخ الباركود");
@@ -146,9 +148,7 @@ class OrderCard extends StatelessWidget {
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          title: Text(
-            order.barcode
-          ),
+          title: Text(order.barcode),
           trailing: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

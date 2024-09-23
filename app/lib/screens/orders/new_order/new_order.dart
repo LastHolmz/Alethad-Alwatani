@@ -318,3 +318,43 @@ class OrderItemCard extends StatelessWidget {
     );
   }
 }
+
+class CustomTableItem extends StatelessWidget {
+  const CustomTableItem({
+    super.key,
+    required this.Key,
+    required this.isLoading,
+    this.KeyStyle = const TextStyle(),
+    this.divivder = false,
+    required this.widget,
+  });
+  final String Key;
+  final TextStyle KeyStyle;
+  final bool divivder;
+  final bool isLoading;
+
+  final Widget widget;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                Key,
+                style: KeyStyle,
+              ),
+              isLoading ? const Skeleton(height: 10) : widget,
+            ],
+          ),
+          divivder ? const Divider() : const SizedBox.shrink()
+        ],
+      ),
+    );
+  }
+}

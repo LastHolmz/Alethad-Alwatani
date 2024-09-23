@@ -3,7 +3,9 @@ import 'package:e_commerce/common/widgets/product_helpers.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/cartItem.dart';
+import 'package:e_commerce/models/user.dart';
 import 'package:e_commerce/providers/cart_provider.dart';
+import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:flutter/material.dart';
 
@@ -81,7 +83,6 @@ class _CartScreenState extends State<CartScreen> {
                               onTap: () {
                                 context.push(
                                   '/products',
-                                  // extra: {'search_query': ''},
                                 );
                               },
                               child: Icon(
@@ -100,7 +101,6 @@ class _CartScreenState extends State<CartScreen> {
                               onPressed: () {
                                 context.push(
                                   '/products',
-                                  extra: {'search_query': ''},
                                 );
                               },
                             ),
@@ -175,24 +175,33 @@ class _CartScreenState extends State<CartScreen> {
                 : Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 20),
-                    child: FilledButton(
-                      onPressed: !valid
-                          ? null
-                          : () {
-                              // context.push('/login');
+                    child: Consumer<UserProvider>(
+                      builder: (context, value, child) =>
+                          value.user?.status == UserStatus.active
+                              ? FilledButton(
+                                  onPressed: !valid
+                                      ? null
+                                      : () {
+                                          // context.push('/login');
 
-                              if (!valid) {
-                                return;
-                              }
-                              cartValues.compareCart();
-                              if (!valid) {
-                                return;
-                              }
-                              context.push(NewOrderScreen.path);
-                              // context.push('home');
-                              // print(valid);
-                            },
-                      child: const Text('إكمال الطلب'),
+                                          if (!valid) {
+                                            return;
+                                          }
+                                          cartValues.compareCart();
+                                          if (!valid) {
+                                            return;
+                                          }
+
+                                          context.push(NewOrderScreen.path);
+                                        },
+                                  child: const Text('إكمال الطلب'),
+                                )
+                              : const FilledButton(
+                                  onPressed: null,
+                                  child: Text(
+                                    'إكمال الطلب',
+                                  ),
+                                ),
                     ),
                   );
           },
