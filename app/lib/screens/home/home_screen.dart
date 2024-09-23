@@ -1,14 +1,13 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce/common/widgets/brand_helpers.dart';
+import 'package:e_commerce/common/widgets/category_helpers.dart';
 import 'package:e_commerce/common/widgets/products_grid.dart';
 
-import 'package:e_commerce/common/widgets/skeleton.dart';
-import 'package:e_commerce/models/category.dart';
-import 'package:e_commerce/models/brand.dart';
 import 'package:e_commerce/providers/products_provider.dart';
 import 'package:e_commerce/providers/user_provider.dart';
-import 'package:e_commerce/screens/auth/auth.dart';
+import 'package:e_commerce/screens/auth/login.dart';
+
 import 'package:e_commerce/screens/products/products_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +44,9 @@ class _HomeScreenState extends State<HomeScreen>
     Future.microtask(
       () => context.read<CategoriesProvider>().fetchCategories(),
     );
+    Future.microtask(
+      () => context.read<BrandsProvider>().fetchBrands(),
+    );
     super.initState();
   }
 
@@ -69,6 +71,9 @@ class _HomeScreenState extends State<HomeScreen>
       const Label(title: 'الأصناف'),
       const SizedBox(height: 10),
       const Categories(),
+      const Label(title: 'البراندات'),
+      const SizedBox(height: 10),
+      const Brands(),
       const SizedBox(height: 10),
       const Label(
         title: "افضل مبيعاتنا",
@@ -112,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen>
                       : _user == null
                           ? TextButton.icon(
                               onPressed: () {
-                                context.go(Auth.path);
+                                context.go(LoginScreen.path);
                               },
                               icon: const Text("تسجيل الدخول"),
                               label: Transform.rotate(
@@ -146,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: CupertinoSearchTextField(
                       onTap: () {
-                        context.go(ProductsScreen.path);
+                        context.push(ProductsScreen.path);
                         FocusScope.of(context).unfocus();
                         _controller.clear();
                       },
@@ -183,46 +188,6 @@ class _HomeScreenState extends State<HomeScreen>
   bool get wantKeepAlive => true;
 }
 
-class Categories extends StatelessWidget {
-  const Categories({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<CategoriesProvider>(
-      builder: (context, value, child) {
-        final categories = value.categories;
-        final loading = value.isLoading;
-        return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisExtent: 180,
-            crossAxisCount: 3,
-          ),
-          itemCount: loading ? 4 : categories.length,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemBuilder: (context, index) {
-            if (!loading) {
-              return Padding(
-                padding: const EdgeInsets.all(8),
-                child: CategoryCard(
-                  category: categories[index],
-                ),
-              );
-            }
-            return const Padding(
-              padding: EdgeInsets.all(8),
-              child: CategorySkeleton(),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
 class Label extends StatelessWidget {
   const Label({
     super.key,
@@ -237,191 +202,6 @@ class Label extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
-}
-
-class CategoryCard extends StatelessWidget {
-  final Category category;
-  final double width;
-  final double height;
-  final double radius;
-  const CategoryCard({
-    super.key,
-    required this.category,
-    this.width = 100, // You can set default width
-    this.height = 100,
-    this.radius = 20,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ClipRRect(
-        child: InkWell(
-          onTap: () => {},
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(radius),
-                child: CachedNetworkImage(
-                  imageUrl: category.image!,
-                  fit: BoxFit.cover,
-                  width: width,
-                  height: height,
-                  placeholder: (context, url) => const Center(
-                    child: const Skeleton(
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: Text(
-                  category.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CategorySkeleton extends StatelessWidget {
-  const CategorySkeleton({
-    super.key,
-    this.widht = 100,
-    this.height = 100,
-  });
-  final double widht;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Skeleton(
-            height: height,
-            width: widht,
-          ),
-          const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Skeleton(height: 10),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class BrandCard extends StatelessWidget {
-  final Brand brand;
-  final double width;
-  final double height;
-  final double radius;
-  const BrandCard({
-    super.key,
-    required this.brand,
-    this.width = 100, // You can set default width
-    this.height = 100,
-    this.radius = 20,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ClipRRect(
-        child: InkWell(
-          onTap: () => {},
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(radius),
-                child: CachedNetworkImage(
-                  imageUrl: brand.image!,
-                  fit: BoxFit.cover,
-                  width: width,
-                  height: height,
-                  placeholder: (context, url) => const Center(
-                    child: const Skeleton(
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ),
-              // Black overlay with opacity
-
-              // Title on top of the black overlay
-              const SizedBox(height: 10),
-              Center(
-                child: Text(
-                  brand.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BrandSkeleton extends StatelessWidget {
-  const BrandSkeleton({
-    super.key,
-    this.widht = 100,
-    this.height = 100,
-  });
-  final double widht;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Skeleton(
-            height: height,
-            width: widht,
-          ),
-          const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Skeleton(height: 10),
-          ),
-        ],
       ),
     );
   }

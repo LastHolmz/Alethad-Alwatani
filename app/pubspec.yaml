@@ -24,8 +24,9 @@ dependencies:
   http: ^1.2.2
   provider: ^6.1.2
   go_router: ^14.2.7
-  gsform: ^0.3.6
   flashy_tab_bar2: ^0.0.10
+  gsform: ^0.3.6
+  animations: ^2.0.11
 
 dev_dependencies:
   flutter_test:

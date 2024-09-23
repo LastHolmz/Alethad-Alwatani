@@ -82,15 +82,6 @@ class ProductsGrid extends StatelessWidget {
       } else {
         return const ProductSkeleton();
       }
-      // } else {
-      //   return const ProductSkeleton();
-      // }
-      // } else if (index < listLength - 1) {
-      //   return const ProductSkeleton();
-      // } else {
-      // return Text("all produ")
-      // return _buildFooter(context, onEnd, value);
-      // }
     } else {
       return const ProductSkeleton();
     }

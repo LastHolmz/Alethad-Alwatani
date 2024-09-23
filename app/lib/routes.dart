@@ -1,12 +1,13 @@
+import 'package:animations/animations.dart';
 import 'package:e_commerce/common/widgets/wrapper.dart';
-import 'package:e_commerce/screens/auth/auth.dart';
 import 'package:e_commerce/screens/auth/login.dart';
 import 'package:e_commerce/screens/auth/sign_up.dart';
 import 'package:e_commerce/screens/cart/index.dart';
+import 'package:e_commerce/screens/category/category_screen.dart';
 import 'package:e_commerce/screens/home/home_screen.dart';
 import 'package:e_commerce/screens/orders/new_order/new_order.dart';
 import 'package:e_commerce/screens/orders/orders_screen.dart';
-import 'package:e_commerce/screens/products/id/index.dart';
+import 'package:e_commerce/screens/products/%5Bid%5D/product_details.dart';
 import 'package:e_commerce/screens/products/products_screen.dart';
 import 'package:e_commerce/screens/welcome/welcome_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,8 +24,8 @@ class AppNavigation {
       GlobalKey<NavigatorState>(debugLabel: 'shellCart');
   static final _rootNavigatorBills =
       GlobalKey<NavigatorState>(debugLabel: 'shellBills');
-  static final _rootNavigatorProfile =
-      GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
+  // static final _rootNavigatorProfile =
+  //     GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
 
   static String initRoute = '/';
 
@@ -40,9 +41,10 @@ class AppNavigation {
         },
       ),
       GoRoute(
-        path: Auth.path,
+        path: '/categories/:id',
         builder: (context, state) {
-          return const Auth();
+          final id = state.pathParameters['id']; // Get "id" param from URL
+          return CategoryScreen(id: id);
         },
       ),
       GoRoute(
@@ -69,6 +71,13 @@ class AppNavigation {
           return const NewOrderScreen();
         },
       ),
+      // GoRoute(
+      //   name: ProductsScreen.name,
+      //   path: ProductsScreen.path,
+      //   builder: (context, state) => ProductsScreen(key: state.pageKey),
+      // ),
+      routeBaseSlideAnimatedSearchProducts(),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Wrapper(navigationShell: navigationShell);
@@ -86,16 +95,7 @@ class AppNavigation {
               ),
             ],
           ),
-          StatefulShellBranch(
-            navigatorKey: _rootNavigatorProfile,
-            routes: [
-              GoRoute(
-                name: ProductsScreen.name,
-                path: ProductsScreen.path,
-                builder: (context, state) => ProductsScreen(key: state.pageKey),
-              ),
-            ],
-          ),
+
           StatefulShellBranch(
             navigatorKey: _rootNavigatorBills,
             routes: [
@@ -140,5 +140,36 @@ class AppNavigation {
         ],
       ),
     ],
+  );
+}
+
+RouteBase routeBaseSlideAnimatedSearchProducts() {
+  return GoRoute(
+    path: '/products',
+    pageBuilder: (BuildContext context, GoRouterState state) {
+      final data = state.extra as Map<String, dynamic>?;
+      return CustomTransitionPage<void>(
+        key: state.pageKey,
+        child: ProductsScreen(
+          brandId: data?["brandId"],
+          categoryId: data?["categoryId"],
+          title: data?['title'],
+        ),
+        opaque: false,
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+        ) {
+          return FadeScaleTransition(
+            animation: animation.drive(Tween(begin: 0, end: 1)),
+            // position: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
+    },
   );
 }

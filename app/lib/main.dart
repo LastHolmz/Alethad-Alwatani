@@ -18,6 +18,9 @@ void main() async {
           create: (context) => CategoriesProvider(),
         ),
         ChangeNotifierProvider(
+          create: (context) => BrandsProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (context) => UserProvider(),
         ),
         ChangeNotifierProvider(
@@ -61,6 +64,7 @@ class _AppState extends State<App> {
       // de
       title: 'e-commerce',
       // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 5, 244, 240)),

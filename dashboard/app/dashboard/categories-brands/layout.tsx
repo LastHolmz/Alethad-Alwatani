@@ -11,10 +11,18 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
+import { revalidateTag } from "next/cache";
 // export const metadata: Metadata = {
 //   title: " our gym | لوحة التحكم قسم الإستقبال",
 // };
-const layout = ({ children }: { children: ReactNode }) => {
+const layout = async ({ children }: { children: ReactNode }) => {
+  const refresh = async () => {
+    "use server";
+    revalidateTag("categories");
+    revalidateTag("products");
+  };
   return (
     <main>
       <DashboardHeader>
@@ -38,12 +46,22 @@ const layout = ({ children }: { children: ReactNode }) => {
           </BreadcrumbList>
         </Breadcrumb>
       </DashboardHeader>
-      <NavigationTabs className="my-1">
-        <HomeTabLink href={`/dashboard/categories-brands`} content="الأصناف" />
-        <TabLink
-          href={`/dashboard/categories-brands/brands`}
-          content="البراندات"
-        />
+      <NavigationTabs className="my-1 flex justify-between items-center">
+        <div className=" flex justify-center gap-2 items-center">
+          <HomeTabLink
+            href={`/dashboard/categories-brands`}
+            content="الأصناف"
+          />
+          <TabLink
+            href={`/dashboard/categories-brands/brands`}
+            content="البراندات"
+          />
+        </div>
+        <form action={refresh}>
+          <Button type={"submit"} size={"icon"} variant={"outline"}>
+            <RefreshCcw className="h-4 w-4"></RefreshCcw>
+          </Button>
+        </form>
       </NavigationTabs>
       {children}
     </main>

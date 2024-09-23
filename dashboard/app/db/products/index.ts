@@ -7,6 +7,9 @@ export const getProducts = unstable_cache(
   async () => {
     try {
       const res = await fetch(`${uri}/products`);
+      if (!res.ok) {
+        return [];
+      }
       const data: { data: Product[] } = await res.json();
       return data.data;
     } catch (error) {

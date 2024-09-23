@@ -1,48 +1,47 @@
 import 'dart:convert';
 
 import 'package:e_commerce/constants/global_variables.dart';
-import 'package:e_commerce/models/category.dart';
+import 'package:e_commerce/models/brand.dart';
 import 'package:http/http.dart';
 
-class CategoryService {
-  Future<List<Category>> getCategories(String? params) async {
+class BrandsService {
+  Future<List<Brand>> getBrands(String? params) async {
     try {
-      final Uri uri = apiUri('categories');
+      final Uri uri = apiUri('brands');
       final token = await getStoredToken();
       final response = await get(uri, headers: headers(token));
       if (response.statusCode != 200) {
         return [];
       } else {
         final Map<String, dynamic> body = json.decode(response.body);
-        final List<dynamic> categorysData = body["data"];
+        final List<dynamic> brandsData = body["data"];
 
-        final List<Category> categories = categorysData
-            .map<Category>((category) => Category.fromJson(category))
-            .toList();
+        final List<Brand> brands =
+            brandsData.map<Brand>((brand) => Brand.fromJson(brand)).toList();
         ;
 
-        return categories;
+        return brands;
       }
     } catch (e) {
       return [];
     }
   }
 
-  Future<Category?> getCategory(String id) async {
+  Future<Brand?> getBrand(String id) async {
     try {
-      final Uri uri = apiUri('categories/$id');
+      final Uri uri = apiUri('brands/$id');
       final token = await getStoredToken();
       final response = await get(uri, headers: headers(token));
       if (response.statusCode != 200) {
         return null;
       } else {
         final Map<String, dynamic> body = json.decode(response.body);
-        final dynamic categoryData = body["data"];
+        final dynamic brandData = body["data"];
 
-        final Category category = Category.fromJson(categoryData);
+        final Brand brand = Brand.fromJson(brandData);
         ;
 
-        return category;
+        return brand;
       }
     } catch (e) {
       return null;

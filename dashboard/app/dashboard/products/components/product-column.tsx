@@ -16,8 +16,7 @@ import { toast } from "@/components/ui/use-toast";
 import NotFoundTable from "../../components/not-found-table";
 import Image from "next/image";
 import ReusableRow from "../../components/reusable-row";
-import { DeleteProductForm, UpdateProductForm } from "./forms";
-import { CustomLink } from "@/components/ui/custom-link";
+import { DeleteProductForm } from "./forms";
 import Link from "next/link";
 
 export const productColumn: ColumnDef<Product>[] = [

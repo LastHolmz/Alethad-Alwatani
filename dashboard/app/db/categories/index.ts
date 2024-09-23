@@ -7,6 +7,9 @@ export const getCategories = unstable_cache(
   async () => {
     try {
       const res = await fetch(`${uri}/categories`);
+      if (!res.ok) {
+        return [];
+      }
       const data: { data: Category[] } = await res.json();
       return data.data;
     } catch (error) {
@@ -184,6 +187,9 @@ export const getBrands = unstable_cache(
   async () => {
     try {
       const res = await fetch(`${uri}/brands`);
+      if (!res.ok) {
+        return [];
+      }
       const data: { data: Brand[] } = await res.json();
       return data.data;
     } catch (error) {

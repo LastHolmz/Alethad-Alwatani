@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../../prisma/db";
+import ResponseHelper from "../../middlewares/response.helper";
 
 export const getBrands = async (req: Request, res: Response) => {
   try {
@@ -75,28 +76,39 @@ export const getBrandById = async (req: Request, res: Response) => {
 };
 
 export const updateBrand = async (req: Request, res: Response) => {
+  const responseHelper = new ResponseHelper(res);
   try {
     const { id } = req.params;
     const {
       title,
       image,
-    }: {
-      title?: string;
-      image?: string;
-    } = req.body;
+      categoryIDs,
+    }: { title?: string; image?: string; categoryIDs?: string[] } = req.body;
 
-    const category = await prisma.brand.update({
+    // Validate required fields
+    if (!id || !categoryIDs || categoryIDs.length === 0 || !title || !image) {
+      return responseHelper.error("يجب ملء كل الحقول", 400);
+    }
+
+    // Update brand with new data and relations
+    const updatedBrand = await prisma.brand.update({
       where: { id },
       data: {
         title,
         image,
+        categories: {
+          set: [],
+          connect: categoryIDs.map((categoryID) => ({ id: categoryID })),
+        },
       },
     });
 
-    if (!category)
+    // Check if the brand was found and updated
+    if (!updatedBrand) {
       return res.status(404).json({ message: "البراند غير موجود" });
+    }
 
-    return res.json({ data: category, message: "تم التحديث بنجاح" });
+    return res.json({ data: updatedBrand, message: "تم التحديث بنجاح" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error, message: "حدث خطأ داخلي" });

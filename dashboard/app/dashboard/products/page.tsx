@@ -16,8 +16,8 @@ import { CustomLink } from "@/components/ui/custom-link";
 import { revalidateTag } from "next/cache";
 
 const page = async () => {
-  revalidateTag("products");
-  console.log("fixxess");
+  // revalidateTag("products");
+  // console.log("fixxess");
   const products = await getProducts();
   // console.log(products[products.length - 2]);
   return (

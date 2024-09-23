@@ -23,7 +23,7 @@ const page = async () => {
           </Suspense>
         </div>
       </div>
-      <UpdateDataToLocalStorage data={categories} key={"categories"} />
+      <UpdateDataToLocalStorage data={categories} keyValue={"categories"} />
     </main>
   );
 };

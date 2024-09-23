@@ -1,6 +1,6 @@
 import 'package:e_commerce/providers/user_provider.dart';
 import 'package:e_commerce/providers/vistits_provider.dart';
-import 'package:e_commerce/screens/auth/auth.dart';
+import 'package:e_commerce/screens/auth/login.dart';
 import 'package:e_commerce/screens/welcome/welcome_screen.dart';
 
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
@@ -166,7 +166,7 @@ class _WrapperState extends State<Wrapper> {
                                   )
                                 : ListTile(
                                     title: const Text("تسجيل الدخول"),
-                                    onTap: () => context.go(Auth.path),
+                                    onTap: () => context.go(LoginScreen.path),
                                   );
                           },
                         ),
@@ -196,12 +196,12 @@ class _WrapperState extends State<Wrapper> {
                         icon: const Icon(Icons.home_outlined),
                         title: const Text('الرئيسية'),
                       ),
-                      FlashyTabBarItem(
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        inactiveColor: Colors.black,
-                        icon: const Icon(Icons.search),
-                        title: const Text('البحث'),
-                      ),
+                      // FlashyTabBarItem(
+                      //   activeColor: Theme.of(context).colorScheme.primary,
+                      //   inactiveColor: Colors.black,
+                      //   icon: const Icon(Icons.search),
+                      //   title: const Text('البحث'),
+                      // ),
                       FlashyTabBarItem(
                         activeColor: Theme.of(context).colorScheme.primary,
                         inactiveColor: Colors.black,

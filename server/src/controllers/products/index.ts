@@ -13,7 +13,32 @@ import updateSkuQuantitiesWithUndo from "../../lib/order-utility";
 export const getProducts = async (req: Request, res: Response) => {
   try {
     console.log("استدعاء getProducts ...");
-    const { barcode, title }: { barcode?: string; title?: string } = req.query;
+    const {
+      barcode,
+      title,
+      brandId,
+      categoryId,
+      page,
+    }: {
+      barcode?: string;
+      title?: string;
+      brandId?: string;
+      categoryId?: string;
+      page?: string;
+    } = req.query;
+    let brandIDs;
+    let categoryIDs;
+    if (brandId) {
+      brandIDs = {
+        has: brandId,
+      };
+    }
+    if (categoryId) {
+      categoryIDs = {
+        has: categoryId,
+      };
+    }
+
     const products = await prisma.product.findMany({
       where: {
         barcode: {
@@ -22,12 +47,17 @@ export const getProducts = async (req: Request, res: Response) => {
         title: {
           contains: title,
         },
+
+        categoryIDs,
+        brandIDs,
       },
       include: {
         brands: true,
         categories: true,
         skus: true,
       },
+      skip: page ? Number(page) : 0,
+
       orderBy: {
         createdAt: "desc",
       },

@@ -6,6 +6,7 @@ import {
   deleteCategoryAction,
   newBrandAction,
   newCategoryAction,
+  updateBrandAction,
   updateCategoryAction,
 } from "../actions";
 import SubmitButton from "../../components/custom-submit-btn";
@@ -248,7 +249,7 @@ export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
   const [categories, _] = useLocalStorage<Category[]>("categories", []);
   return (
     <AccssibleDialogForm
-      success="تم الإنشاء بنجاح"
+      success="تم التحديث بنجاح"
       trigger={
         <Button
           variant={"outline"}
@@ -259,7 +260,7 @@ export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
       }
       dontReplace={true}
       stopClosing
-      action={newBrandAction}
+      action={updateBrandAction}
       title="تحديث البراند"
     >
       <div className="grid gap-2 px-2 py-10">
@@ -284,7 +285,8 @@ export const UpdateBrandForm = ({ brand }: { brand: Brand }) => {
           data={categories}
         />
       </div>
-      <SubmitButton>حفظ</SubmitButton>
+      <Input type={"hidden"} name="id" value={brand.id} />
+      <SubmitButton>تحديث</SubmitButton>
     </AccssibleDialogForm>
   );
 };

@@ -1,6 +1,8 @@
 import 'package:e_commerce/constants/global_variables.dart';
+import 'package:e_commerce/models/brand.dart';
 import 'package:e_commerce/models/category.dart';
 import 'package:e_commerce/models/product.dart';
+import 'package:e_commerce/services/brands_service.dart';
 import 'package:e_commerce/services/categoy_service.dart';
 import 'package:e_commerce/services/product_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,6 +39,34 @@ class CategoriesProvider extends ChangeNotifier {
       }
     } catch (e) {
       _categories = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
+
+class BrandsProvider extends ChangeNotifier {
+  final BrandsService _brandsServices = BrandsService();
+  List<Brand> _brands = [];
+
+  List<Brand> get brands => _brands;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  Future<void> fetchBrands() async {
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await _brandsServices.getBrands('');
+      _brands.clear();
+      _brands = result;
+    } catch (e) {
+      _brands = [];
     } finally {
       _isLoading = false;
       notifyListeners();

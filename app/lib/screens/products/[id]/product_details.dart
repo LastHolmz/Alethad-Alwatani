@@ -132,83 +132,125 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                   const SizedBox(height: 10),
                                   const Divider(),
-                                  const SizedBox(height: 10),
-                                  Wrap(
-                                    spacing:
-                                        8.0, // Adjust spacing between items
-                                    runSpacing:
-                                        4.0, // Adjust spacing between lines
-                                    children: product?.skus
-                                            ?.map((sku) => ColorCircle(
-                                                  width: 40,
-                                                  height: 40,
-                                                  radius: 6,
-                                                  color: getColorFromHex(
-                                                    sku.hashedColor,
-                                                  ),
-                                                ))
-                                            .toList() ??
-                                        [],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Divider(),
-                                  const SizedBox(height: 10),
-                                  Text(product?.description ?? ""),
-                                  const SizedBox(height: 10),
-                                  const Divider(),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    'صور المنتج',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 20,
+                                  ProductPart(
+                                    label: "الألوان المتوفرة",
+                                    widget: Wrap(
+                                      spacing:
+                                          8.0, // Adjust spacing between items
+                                      runSpacing:
+                                          4.0, // Adjust spacing between lines
+                                      children: product?.skus
+                                              ?.map((sku) => ColorCircle(
+                                                    width: 40,
+                                                    height: 40,
+                                                    radius: 6,
+                                                    color: getColorFromHex(
+                                                      sku.hashedColor,
+                                                    ),
+                                                  ))
+                                              .toList() ??
+                                          [],
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  GridView.builder(
-                                    addAutomaticKeepAlives: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2),
-                                    itemCount: _setImages(
-                                      product?.skus,
-                                      product?.image ?? "",
-                                    ).length,
-                                    itemBuilder: (context, index) {
-                                      final String image = _setImages(
+                                  ProductPart(
+                                    label: "الأصناف",
+                                    widget: Wrap(
+                                      spacing:
+                                          8.0, // Adjust spacing between items
+                                      runSpacing:
+                                          4.0, // Adjust spacing between lines
+                                      children: product?.categories
+                                              ?.map(
+                                                (category) => TextButton(
+                                                  onPressed: () {
+                                                    context.push(
+                                                      '/products',
+                                                      extra: {
+                                                        "categoryId":
+                                                            category.id,
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Text(category.title),
+                                                ),
+                                              )
+                                              .toList() ??
+                                          [],
+                                    ),
+                                  ),
+                                  ProductPart(
+                                    label: "البراندات",
+                                    widget: Wrap(
+                                      spacing:
+                                          8.0, // Adjust spacing between items
+                                      runSpacing:
+                                          4.0, // Adjust spacing between lines
+                                      children: product?.brands
+                                              ?.map(
+                                                (brand) => TextButton(
+                                                  onPressed: () {
+                                                    context.push('/products',
+                                                        extra: {
+                                                          "brandId": brand.id
+                                                        });
+                                                  },
+                                                  child: Text(brand.title),
+                                                ),
+                                              )
+                                              .toList() ??
+                                          [],
+                                    ),
+                                  ),
+                                  ProductPart(
+                                    label: "الشرح",
+                                    widget: Text(product?.description ?? ""),
+                                  ),
+                                  ProductPart(
+                                    label: "صور المنتج",
+                                    widget: GridView.builder(
+                                      addAutomaticKeepAlives: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2),
+                                      itemCount: _setImages(
                                         product?.skus,
                                         product?.image ?? "",
-                                      )[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 8,
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                const Skeleton(
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                            ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(
-                                              Icons.error,
-                                            ),
-                                            imageUrl: image,
+                                      ).length,
+                                      itemBuilder: (context, index) {
+                                        final String image = _setImages(
+                                          product?.skus,
+                                          product?.image ?? "",
+                                        )[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 8,
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const Divider(),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  const Skeleton(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                Icons.error,
+                                              ),
+                                              imageUrl: image,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
@@ -218,6 +260,30 @@ class _ProductDetailsState extends State<ProductDetails> {
                     ),
         ),
       ),
+    );
+  }
+}
+
+class ProductPart extends StatelessWidget {
+  const ProductPart({
+    super.key,
+    required this.widget,
+    this.label,
+  });
+
+  final Widget widget;
+  final String? label;
+
+  @override
+  build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label ?? ""),
+        const SizedBox(height: 10),
+        widget,
+        const Divider(),
+      ],
     );
   }
 }

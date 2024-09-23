@@ -40,7 +40,7 @@ export function TabLink({ href, content, className }: TabLinkProps) {
           "flex-center text-sm  h-12 px-4 transition-all py-2 rounded-sm",
           pathname.startsWith(href)
             ? "text-primary"
-            : "dark:text-white text-black hover:bg-orange-200"
+            : "dark:text-white text-black hover:bg-primary/20"
         )}
         href={href}
       >
@@ -65,7 +65,7 @@ export function HomeTabLink({ href, content, className }: TabLinkProps) {
           "flex-center text-sm  h-12 px-4 transition-all py-2 rounded-sm",
           pathname === `${href}`
             ? "text-primary"
-            : "dark:text-white text-black hover:bg-orange-200"
+            : "dark:text-white text-black hover:bg-primary/20"
         )}
         href={href}
       >

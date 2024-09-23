@@ -81,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
                               onTap: () {
                                 context.push(
                                   '/products',
-                                  extra: {'search_query': ''},
+                                  // extra: {'search_query': ''},
                                 );
                               },
                               child: Icon(

@@ -23,7 +23,7 @@ class Category {
     required this.id,
     this.productIDs,
     required this.title,
-    this.brands,
+    required this.brands,
     required this.main,
     this.image,
   });

@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/models/product.dart';
 import 'package:e_commerce/models/user.dart';
 import 'package:e_commerce/providers/user_provider.dart';
-import 'package:e_commerce/screens/products/id/index.dart';
+import 'package:e_commerce/screens/products/%5Bid%5D/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/common/widgets/skeleton.dart';
 import 'package:go_router/go_router.dart';

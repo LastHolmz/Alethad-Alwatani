@@ -61,92 +61,97 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: form = GSForm.singleSection(
-                        style: GSFormStyle(
-                          sectionCardPadding: 20,
-                          titleStyle: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16.0,
+          padding: const EdgeInsets.all(16.0), // Add padding around the form
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Adding a logo or title can help balance the layout
+                  const Text(
+                    'مرحبًا بكم في الإتحاد الوطني',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: form = GSForm.singleSection(
+                      style: GSFormStyle(
+                        sectionCardPadding: 20,
+                        titleStyle: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      context,
+                      fields: [
+                        GSField.mobile(
+                          tag: 'mobile',
+                          title: 'رقم الهاتف',
+                          weight: 12,
+                          required: true,
+                          maxLength: 100,
+                          errorMessage: 'يجب ملء رقم الهاتف',
+                          hint: "ادخل رقم الهاتف",
+                          prefixWidget: const Icon(
+                            Icons.phone_android,
+                            size: 18,
                           ),
                         ),
-                        context,
-                        fields: [
-                          GSField.mobile(
-                            tag: 'mobile',
-                            title: 'رقم الهاتف',
-                            weight: 12,
-                            required: true,
-                            maxLength: 100,
-                            errorMessage: 'يجب ملء رقم الهاتف',
-                            hint: "ادخل رقم الهاتف",
-                            prefixWidget: const Icon(
-                              Icons.phone_android,
-                              size: 18,
-                            ),
+                        GSField.password(
+                          tag: 'password',
+                          title: 'كلمة السر',
+                          weight: 12,
+                          required: true,
+                          maxLength: 100,
+                          errorMessage: 'يجب ملء كلمة السر',
+                          hint: "ادخل كلمة السر",
+                          prefixWidget: const Icon(
+                            Icons.password,
+                            size: 18,
                           ),
-                          GSField.password(
-                            tag: 'password',
-                            title: 'كلمة السر',
-                            weight: 12,
-                            required: true,
-                            maxLength: 100,
-                            errorMessage: 'يجب ملء كلمة السر',
-                            hint: "ادخل كلمة السر",
-                            prefixWidget: const Icon(
-                              Icons.password,
-                              size: 18,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          FilledButton(
-                            onPressed: () async {
-                              bool isValid = form.isValid();
-                              if (!isValid) {
-                                return;
-                              }
-                              Map<String, dynamic> map = form.onSubmit();
+                        ),
+                        const SizedBox(
+                            height: 20), // Add spacing between fields
+                        FilledButton(
+                          onPressed: () async {
+                            bool isValid = form.isValid();
+                            if (!isValid) {
+                              return;
+                            }
+                            Map<String, dynamic> map = form.onSubmit();
 
-                              await login(
-                                User(
-                                  id: '',
-                                  fullName: '',
-                                  password: map["password"],
-                                  companyTitle: '',
-                                  createdAt: DateTime.now(),
-                                  updatedAt: DateTime.now(),
-                                  gender: Gender.man,
-                                  location: '',
-                                  mobile: int.parse(map["mobile"]),
-                                  componeyMobile: 0,
-                                ),
-                              );
-                            },
-                            child: const Text("تسجيل الدخول"),
-                          ),
-                          const SizedBox(height: 5),
-                          TextButton(
-                            onPressed: () {
-                              context.push(SingUpScreen.path);
-                            },
-                            child: const Text("إنشاء حساب"),
-                          ),
-                        ],
-                      ),
+                            await login(
+                              User(
+                                id: '',
+                                fullName: '',
+                                password: map["password"],
+                                companyTitle: '',
+                                createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
+                                gender: Gender.man,
+                                location: '',
+                                mobile: int.parse(map["mobile"]),
+                                componeyMobile: 0,
+                              ),
+                            );
+                          },
+                          child: const Text("تسجيل الدخول"),
+                        ),
+                        const SizedBox(height: 10),
+                        TextButton(
+                          onPressed: () {
+                            context.push(SingUpScreen.path);
+                          },
+                          child: const Text("إنشاء حساب"),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
