@@ -242,6 +242,7 @@ export const updateOrder = async (req: Request, res: Response) => {
  * @returns {Promise<Response>} The updated order with the cancellation status.
  */
 export const cancelOrder = async (req: Request, res: Response) => {
+  console.log("cancel order is being called");
   try {
     const { id } = req.params;
     const { status }: { status: OrderStatus } = req.body;

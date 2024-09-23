@@ -9,7 +9,7 @@ import {
   validatePassword,
   validatePhoneNumber,
 } from "../../lib";
-import { Gender } from "@prisma/client";
+import { Gender, User } from "@prisma/client";
 import { decodedJwtToken, generateJwtToken } from "../../lib/jwt";
 import ResponseHelper from "../../middlewares/response.helper";
 

@@ -51,8 +51,8 @@ Future<String> getStoredToken() async {
   return token;
 }
 
-const uri = 'http://10.0.2.2:10000/api/v1/';
-// const uri = 'https://alethad-alwatani.onrender.com/api/v1/';
+// const uri = 'http://10.0.2.2:10000/api/v1/';
+const uri = 'https://alethad-alwatani.onrender.com/api/v1/';
 
 Uri apiUri(String path) {
   return Uri.parse('$uri$path');
