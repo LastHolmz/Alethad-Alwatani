@@ -9,18 +9,12 @@ const page = async () => {
   const brands = await getBrands();
   return (
     <main>
-      <div className=" my-4 container">
-        <div className="">
-          <Suspense fallback={"جاري التحميل"}>
-            <BrandsTable
-              data={brands}
-              columns={brandColumn}
-              searchQuery="title"
-            >
-              <NewBrandForm data={categories} />
-            </BrandsTable>
-          </Suspense>
-        </div>
+      <div className=" my-4 md:container">
+        <Suspense fallback={"جاري التحميل"}>
+          <BrandsTable data={brands} columns={brandColumn} searchQuery="title">
+            <NewBrandForm data={categories} />
+          </BrandsTable>
+        </Suspense>
       </div>
     </main>
   );

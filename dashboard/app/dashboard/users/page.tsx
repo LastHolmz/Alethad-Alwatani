@@ -9,16 +9,18 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { getProducts } from "@/app/db/products";
-import { productColumn } from "./components/product-column";
+import { usersColumn } from "./components/user-column";
 import ProductTable from "../components/reusable-table";
 import { CustomLink } from "@/components/ui/custom-link";
+import { getUseres } from "@/app/db/users";
+import { CreateUserForm } from "./components/forms";
 
-const page = async () => {
-  // revalidateTag("products");
-  // console.log("fixxess");
-  const products = await getProducts();
-  // console.log(products[products.length - 2]);
+const page = async ({
+  searchParams,
+}: {
+  searchParams?: { query?: string };
+}) => {
+  const users = await getUseres(searchParams.query);
   return (
     <main>
       <DashboardHeader>
@@ -37,7 +39,7 @@ const page = async () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>المنتجات</BreadcrumbPage>
+              <BreadcrumbPage>المستخدمين</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -47,17 +49,16 @@ const page = async () => {
         {" "}
         <Suspense fallback={"جاري التحميل"}>
           <ProductTable
-            data={products}
-            columns={productColumn}
-            searchQuery="title"
+            data={users}
+            columns={usersColumn}
+            searchQuery="query"
+            defaultColumnVisibility={{
+              ["الجنس"]: false,
+              ["اسم الشركة"]: false,
+              ["رقم الشركة"]: false,
+            }}
           >
-            <CustomLink
-              className="mx-2 bg-primary hover:bg-primary/80"
-              variant={"destructive"}
-              href="products/new"
-            >
-              منتج جديد
-            </CustomLink>
+            <CreateUserForm />
           </ProductTable>
         </Suspense>
       </div>

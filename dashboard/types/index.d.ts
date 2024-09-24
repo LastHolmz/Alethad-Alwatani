@@ -73,6 +73,7 @@ interface Order {
   orderItems: OrderItem[]; // Array of order items associated with the order
   user?: User; // Optional reference to the associated User object
   status: OrderStatus;
+  barcode: string;
 }
 
 declare interface OrderItem {
@@ -93,27 +94,10 @@ declare interface OrderItem {
   order?: Order; // Optional reference to the associated Order object
 }
 
-enum UserRole {
-  admin = "admin",
-  user = "user",
-  guest = "guest",
-}
+type UserRole = "admin" | "user" | "guest";
 
-enum UserStatus {
-  pending = "pending",
-  active = "active",
-  inactive = "inactive",
-}
+type UserStatus = "pending" | "active" | "inactive";
 
-enum Gender {
-  man = "man",
-  woman = "woman",
-}
+type Gender = "man" | "woman";
 
-enum OrderStatus {
-  pending = "pending", // Order is pending
-  inProgress = "inProgress", // Order is in progress
-  done = "done", // Order is completed
-  rejected = "rejected", // Order is completed
-  refused = "refused", // Order is completed
-}
+type OrderStatus = "pending" | "inProgress" | "done" | "rejected" | "refused";

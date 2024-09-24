@@ -9,16 +9,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { getProducts } from "@/app/db/products";
-import { productColumn } from "./components/product-column";
+import { orderColumn } from "./components/order-column";
 import ProductTable from "../components/reusable-table";
 import { CustomLink } from "@/components/ui/custom-link";
+import { getOrders } from "@/app/db/orders";
 
-const page = async () => {
-  // revalidateTag("products");
-  // console.log("fixxess");
-  const products = await getProducts();
-  // console.log(products[products.length - 2]);
+const page = async ({
+  searchParams,
+}: {
+  searchParams?: { barcode?: string };
+}) => {
+  const orders = await getOrders(searchParams.barcode);
   return (
     <main>
       <DashboardHeader>
@@ -37,7 +38,7 @@ const page = async () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>المنتجات</BreadcrumbPage>
+              <BreadcrumbPage>الفواتير</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -47,9 +48,12 @@ const page = async () => {
         {" "}
         <Suspense fallback={"جاري التحميل"}>
           <ProductTable
-            data={products}
-            columns={productColumn}
-            searchQuery="title"
+            data={orders}
+            columns={orderColumn}
+            searchQuery="barcode"
+            defaultColumnVisibility={{
+              ["رقم الهاتف"]: false,
+            }}
           >
             <CustomLink
               className="mx-2 bg-primary hover:bg-primary/80"

@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global styles for printing */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;

@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import SearchInput from "@/app/dashboard/components/search";
+import { cn } from "@/lib/utils";
 
 export default function ReusableTable<T>({
   data = [],
@@ -39,6 +40,8 @@ export default function ReusableTable<T>({
   filter,
   searchQuery = "query",
   children,
+  className,
+  showSearch = true,
 }: {
   data?: T[];
   defaultColumnVisibility?: VisibilityState;
@@ -46,6 +49,8 @@ export default function ReusableTable<T>({
   filter?: React.ReactNode;
   searchQuery?: string;
   children?: React.ReactNode;
+  className?: string;
+  showSearch?: boolean;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -77,9 +82,9 @@ export default function ReusableTable<T>({
   });
 
   return (
-    <div className="w-full" dir="rtl">
+    <div className={cn("w-full", className)} dir="rtl">
       <div className="flex justify-between items-center py-4">
-        <SearchInput className="max-w-sm" query={searchQuery} />
+        {showSearch && <SearchInput className="max-w-sm" query={searchQuery} />}
 
         <div className="flex-center gap-1">
           <DropdownMenu dir="rtl">

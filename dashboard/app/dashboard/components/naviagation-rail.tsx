@@ -132,48 +132,6 @@ const NavigationRail = () => {
         <NavigationRailItem
           pathname={pathname}
           collapsed={collapsed}
-          href="/dashboard/doctors"
-          Icon={FaUserDoctor}
-          name="الأطباء"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
-          href="/dashboard/offers"
-          Icon={MdLocalOffer}
-          name="العروض"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
-          href="/dashboard/orders"
-          Icon={FaCodePullRequest}
-          name="الطلبات"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
-          href="/dashboard/reception"
-          Icon={TfiLayoutMediaCenter}
-          name="قسم الإستقبال"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
-          href="/dashboard/subscriptions"
-          Icon={MdOutline6FtApart}
-          name="الإشتراكات"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
-          href="/dashboard/trainers"
-          Icon={GiMuscleUp}
-          name="المتدربين"
-        />
-        <NavigationRailItem
-          pathname={pathname}
-          collapsed={collapsed}
           href="/dashboard/users"
           Icon={FaUsers}
           name="المستخدمين"
@@ -181,9 +139,9 @@ const NavigationRail = () => {
         <NavigationRailItem
           pathname={pathname}
           collapsed={collapsed}
-          href="/dashboard/logs"
-          Icon={TbReportSearch}
-          name="السجلات"
+          href="/dashboard/orders"
+          Icon={MdLocalOffer}
+          name="الفواتير"
         />
       </Menu>
     </Sidebar>

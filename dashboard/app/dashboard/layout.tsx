@@ -2,6 +2,7 @@ import NavigationRail from "./components/naviagation-rail";
 import "../globals.css";
 import { Metadata } from "next";
 import { revalidateTag } from "next/cache";
+import DoNotRenderIf from "./components/do-not-render";
 // import Header from "./components/header";
 // import { redirection } from "@/lib/role-access-server";
 
@@ -31,9 +32,11 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       className="flex relative flex-start gap-1 min-h-screen bg-secondary"
       dir="rtl"
     >
-      <section className=" bg-white">
-        <NavigationRail />
-      </section>
+      <DoNotRenderIf conditionLable="print">
+        <section className=" bg-white">
+          <NavigationRail />
+        </section>
+      </DoNotRenderIf>
       <section className="flex-1 bg-secondary max-w-full">
         {/* <Header /> */}
         <>{children}</>

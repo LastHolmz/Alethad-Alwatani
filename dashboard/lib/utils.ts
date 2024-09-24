@@ -75,3 +75,15 @@ export const convertToHex = (color: string): string => {
   // If it's not HEX, RGB, or HSL, return null
   return "#000000";
 };
+
+export const orderStatusToArabic = (status: OrderStatus): string => {
+  const translations: Record<OrderStatus, string> = {
+    pending: "قيد الانتظار",
+    inProgress: "قيد التنفيذ",
+    done: "منجز",
+    rejected: "مرفوض",
+    refused: "مرفوض",
+  };
+
+  return translations[status];
+};

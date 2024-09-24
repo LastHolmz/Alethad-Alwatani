@@ -17,7 +17,7 @@ model User {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
   fullName       String
   password       String
-  role           UserRole   @default(guest)
+  role           UserRole   @default(user)
   status         UserStatus @default(pending)
   gender         Gender     @default(man)
   companyTitle   String
