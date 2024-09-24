@@ -43,8 +43,14 @@ class _OrderDetailsState extends State<OrderDetails> {
     _isLoading = true;
     await _orderService.cancleOrder(id, context);
     _isLoading = false;
+
     setState(() {});
+
     fetchOrder();
+
+    fetchOrders();
+
+    context.pop();
   }
 
   void fetchOrders([String? barcode]) async {
@@ -154,12 +160,12 @@ class _OrderDetailsState extends State<OrderDetails> {
                       TableItem(
                         isLoading: _isLoading,
                         Key: "القيمة المدفوعة",
-                        Value: '0 د',
+                        Value: '${order!.totalPrice - order!.rest} د',
                       ),
                       TableItem(
                         isLoading: _isLoading,
                         Key: "المتبقي",
-                        Value: '${order!.totalPrice} د',
+                        Value: '${order!.rest} د',
                       ),
                       TableItem(
                         isLoading: _isLoading,

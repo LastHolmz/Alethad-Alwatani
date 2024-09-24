@@ -3,6 +3,7 @@ import 'package:e_commerce/common/widgets/utils.dart';
 import 'package:e_commerce/models/order.dart';
 import 'package:e_commerce/providers/orders_provider.dart';
 import 'package:e_commerce/providers/user_provider.dart';
+import 'package:e_commerce/utility/calc_bills.dart';
 import 'package:e_commerce/utility/clip_board.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,11 +38,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: RefreshIndicator.adaptive(
-        onRefresh: () async => fetchOrders(),
-        child: Scaffold(
-          body: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
+      child: Scaffold(
+        body: RefreshIndicator.adaptive(
+          onRefresh: () async {
+            fetchOrders();
+          },
+          child: CustomScrollView(
+            // physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -88,6 +91,49 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 floating: true,
                 toolbarHeight: 60,
               ),
+              Consumer<OrdersProvider>(
+                builder: (context, value, child) {
+                  return SliverPadding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    sliver: SliverList.list(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            infoCard(
+                              bgColor: Colors.blue.shade300,
+                              icon: Icon(
+                                Icons.account_balance_outlined,
+                                size: 36,
+                                color: Colors.white,
+                              ),
+                              price: getSumOfOrderPrices(value.orders),
+                              lable: "جميع المعاملات",
+                            ),
+                            SizedBox(width: 20),
+                            infoCard(
+                              bgColor: Colors.red.shade300,
+                              icon: Icon(
+                                Icons.money_off_outlined,
+                                size: 36,
+                                color: Colors.white,
+                              ),
+                              price: getDebt(value.orders),
+                              lable: "قيمة المديونية",
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        // Divider(),
+                        Text(
+                          'عدد الفواتير: ${value.orders.length} فاتورة',
+                          style: TextStyle(fontSize: 22),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -131,12 +177,69 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 }
 
+class infoCard extends StatelessWidget {
+  const infoCard({
+    super.key,
+    required this.price,
+    required this.bgColor,
+    required this.icon,
+    required this.lable,
+  });
+  final double price;
+  final Color bgColor;
+  final Icon icon;
+  final String lable;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            // height: 86,
+            // width: 86,
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 16,
+            ),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(
+                12,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                icon,
+                Text(
+                  "$price د",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            lable,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18),
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class OrderCard extends StatelessWidget {
   const OrderCard({super.key, required this.order});
   final Order order;
   @override
   Widget build(BuildContext context) {
-    return Card.filled(
+    return Card.outlined(
       child: InkWell(
         onTap: () {
           context.push('/orders/${order.id}');
@@ -178,13 +281,13 @@ class Debt extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           width: 90,
           decoration: BoxDecoration(
-            color: Colors.red.shade100,
+            color: Colors.redAccent.shade400,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             "غير خالص", // Display status in Arabic
             style: TextStyle(
-              color: Colors.red.shade900, // Text color
+              color: Colors.white, // Text color
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
@@ -194,13 +297,13 @@ class Debt extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       width: 90,
       decoration: BoxDecoration(
-        color: Colors.green.shade200,
+        color: Colors.green.shade400,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         "خالص", // Display status in Arabic
         style: TextStyle(
-          color: Colors.green.shade900, // Text color
+          color: Colors.white, // Text color
           fontSize: 14,
         ),
         textAlign: TextAlign.center,
@@ -228,7 +331,7 @@ String getOrderStatusInArabic(OrderStatus status) {
 }
 
 // Helper function to determine background color based on OrderStatus
-Color getOrderStatusBgColor(OrderStatus status) {
+Color getOrderStatusTextColor(OrderStatus status) {
   switch (status) {
     case OrderStatus.pending:
       return Colors.orangeAccent.shade100; // Light orange for pending
@@ -245,18 +348,18 @@ Color getOrderStatusBgColor(OrderStatus status) {
   }
 }
 
-Color getOrderStatusTextColor(OrderStatus status) {
+Color getOrderStatusBgColor(OrderStatus status) {
   switch (status) {
     case OrderStatus.pending:
-      return Colors.orangeAccent.shade700; // Light orange for pending
+      return Colors.orangeAccent.shade400; // Light orange for pending
     case OrderStatus.inProgress:
-      return Colors.blueAccent.shade700; // Light blue for in progress
+      return Colors.blueAccent.shade400; // Light blue for in progress
     case OrderStatus.done:
-      return Colors.greenAccent.shade700; // Light green for done
+      return Colors.greenAccent.shade400; // Light green for done
     case OrderStatus.rejected:
-      return Colors.redAccent.shade700; // Light red for rejected
+      return Colors.redAccent.shade400; // Light red for rejected
     case OrderStatus.refused:
-      return Colors.red.shade900; // Darker red for refused
+      return Colors.red.shade500; // Darker red for refused
     default:
       return Colors.grey.shade500; // Fallback grey for unknown status
   }
@@ -282,7 +385,7 @@ class OrderStatusWidget extends StatelessWidget {
       child: Text(
         getOrderStatusInArabic(status), // Display status in Arabic
         style: TextStyle(
-          color: getOrderStatusTextColor(status), // Text color
+          color: Colors.white, // Text color
           fontSize: 14,
         ),
         textAlign: TextAlign.center,

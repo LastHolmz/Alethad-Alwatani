@@ -35,19 +35,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: Column(
                     children: <Widget>[
-                      Text(item['header'],
-                          style: const TextStyle(
-                              fontSize: 50.0,
-                              fontWeight: FontWeight.w300,
-                              color: Color(0XFF3F3D56),
-                              height: 2.0)),
+                      Text(
+                        item['header'],
+                        style: const TextStyle(
+                            fontSize: 36.0,
+                            fontWeight: FontWeight.w300,
+                            color: Color(0XFF3F3D56),
+                            height: 2.0),
+                      ),
                       Text(
                         item['description'],
                         style: const TextStyle(
-                            color: Colors.grey,
-                            letterSpacing: 1.2,
-                            fontSize: 16.0,
-                            height: 1.3),
+                          color: Colors.grey,
+                          letterSpacing: 1.2,
+                          fontSize: 16.0,
+                          height: 1.3,
+                        ),
                         textAlign: TextAlign.center,
                       )
                     ],
@@ -78,11 +81,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    _pageViewController.addListener(() {
-      setState(() {
-        currentPage = _pageViewController.page ?? 0;
-      });
-    });
+    // _pageViewController.addListener(() {
+    //   setState(() {
+    //     currentPage = _pageViewController.page ?? 0;
+    //   });
+    // });
   }
 
   void setCurrentPage(double val) {
@@ -126,15 +129,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ? null
                     : () {
                         if (currentPage > 0) {
+                          print(currentPage);
                           setCurrentPage(currentPage - 1);
+                          print(currentPage);
                         }
                       },
                 child: const Text("السابق"),
               ),
               TextButton(
-                onPressed: currentPage <= slides.length
+                onPressed: currentPage <= slides.length - 1
                     ? () {
-                        if (currentPage == slides.length) {
+                        if (currentPage == slides.length - 1) {
                           context.go(LoginScreen.path);
                         }
                         if (currentPage < slides.length) {
@@ -153,6 +158,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               PageView.builder(
                 controller: _pageViewController,
                 itemCount: slides.length,
+                onPageChanged: (value) => setCurrentPage(value.toDouble()),
                 itemBuilder: (BuildContext context, int index) {
                   return slides[index];
                 },

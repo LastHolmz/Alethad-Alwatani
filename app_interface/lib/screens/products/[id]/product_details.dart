@@ -431,9 +431,9 @@ class _skusSheetContentState extends State<skusSheetContent> {
                         : ListView.builder(
                             controller: controller,
                             shrinkWrap: true,
-                            itemCount:
-                                createCartItemsForProduct(widget.product.skus)
-                                    .length,
+                            itemCount: createCartItemsForProduct(
+                              widget.product.skus,
+                            ).length,
                             itemBuilder: (context, index) {
                               final cartItem = createCartItemsForProduct(
                                   widget.product.skus)[index];
@@ -449,18 +449,18 @@ class _skusSheetContentState extends State<skusSheetContent> {
                                     subtitle: Row(
                                       children: [
                                         Text(
-                                          cartItem.maxQty > 0
-                                              ? "متوفر"
-                                              : "غير متوفر",
+                                          cartItem.maxQty <= 0
+                                              ? "غير متوفر"
+                                              : "متوفر",
                                           style: TextStyle(
-                                            color: cartItem.maxQty > 0
-                                                ? Colors.green
-                                                : Colors.red,
+                                            color: cartItem.maxQty <= 0
+                                                ? Colors.red
+                                                : Colors.green,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
-                                          ' | ${cartItem.nameOfColor} | ',
+                                          ' | ${cartItem.nameOfColor ?? 'بلا'} | ',
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                         ),
@@ -492,11 +492,13 @@ class _skusSheetContentState extends State<skusSheetContent> {
                                     titleAlignment:
                                         ListTileTitleAlignment.threeLine,
                                     title: Text(cartItem.title),
-                                    trailing: ControllProductQty(
-                                      cartItem: cartItem,
-                                      cart: cart,
-                                      currentCartItem: currentCartItem,
-                                    ),
+                                    trailing: cartItem.maxQty <= 0
+                                        ? SizedBox.shrink()
+                                        : ControllProductQty(
+                                            cartItem: cartItem,
+                                            cart: cart,
+                                            currentCartItem: currentCartItem,
+                                          ),
                                   );
                                 },
                               );
