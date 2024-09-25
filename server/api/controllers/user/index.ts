@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../../prisma/db";
-import { User } from "@prisma/client";
+import { User, UserRole } from "@prisma/client";
 import ResponseHelper from "../../middlewares/response.helper";
 import { AuthenticatedRequest } from "../../../types";
 import { hashPassword } from "../../lib";
@@ -40,8 +40,7 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 const getUsers = async (req: Request, res: Response) => {
-  const responseHelper = new ResponseHelper(res);
-  const { name } = req.query;
+  const { name, role }: { name?: string; role?: UserRole } = req.query;
   let fullName: any;
   if (name) {
     fullName = {
@@ -52,6 +51,7 @@ const getUsers = async (req: Request, res: Response) => {
     const users = await prisma.user.findMany({
       where: {
         fullName,
+        role,
       },
       orderBy: {
         createdAt: "desc",

@@ -63,13 +63,18 @@ app.get("/", async (req, res) => {
 // app.use(limiter);
 
 app.use("/api/v1/auth", authRouters);
-app.use(authenticate);
+// app.use(authenticate);
 app.use("/api/v1/products", productsRouters);
 app.use("/api/v1/skus", skusRouters);
 app.use("/api/v1/categories", categoriesRouters);
 app.use("/api/v1/brands", brandsRouters);
-app.use("/api/v1/orders", ordersRouters);
-app.use("/api/v1/users", authorize(["admin"], ["active"]), usersRouters);
+app.use("/api/v1/orders", authenticate, ordersRouters);
+app.use(
+  "/api/v1/users",
+  authenticate,
+  authorize(["admin"], ["active"]),
+  usersRouters
+);
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 const PORT = process.env.PORT || 8080;

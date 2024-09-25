@@ -1,15 +1,13 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "../../errors";
 import prisma from "../../../prisma/db";
-import DuplicatedError from "../../errors/duplicated-request";
 import {
   comparePassword,
   hashPassword,
+  isValidPhoneNumber,
   validateFullName,
   validatePassword,
-  validatePhoneNumber,
 } from "../../lib";
-import { Gender, User } from "@prisma/client";
+import { Gender } from "@prisma/client";
 import { decodedJwtToken, generateJwtToken } from "../../lib/jwt";
 import ResponseHelper from "../../middlewares/response.helper";
 
@@ -38,6 +36,10 @@ const login = async (req: Request, res: Response) => {
     // Validate required fields
     if (!mobile || !password) {
       return responseHelper.error("يجب ملء كل الحقول", 400);
+    }
+    const isValidPhone = isValidPhoneNumber(mobile);
+    if (!isValidPhone) {
+      return responseHelper.error("يجب ادخال رقم هاتف صحيح");
     }
 
     // Validate full name length
@@ -134,6 +136,15 @@ const register = async (req: Request, res: Response) => {
       !componeyMobile
     ) {
       return responseHelper.error("يجب ملء كل الحقول", 400);
+    }
+
+    const isValidPhone = isValidPhoneNumber(mobile);
+    const isValidCompanyPhone = isValidPhoneNumber(mobile);
+    if (!isValidPhone) {
+      return responseHelper.error("يجب ادخال رقم هاتف صحيح");
+    }
+    if (!isValidCompanyPhone) {
+      return responseHelper.error("يجب ان يكون رقم هاتف الشركة صحيح");
     }
 
     // Validate full name length

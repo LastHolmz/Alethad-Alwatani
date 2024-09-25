@@ -6,18 +6,18 @@ import {
   getBrands,
   updateBrand,
 } from "../../controllers/brands";
-import { authorize } from "../../middlewares/auth";
+import { authenticate, authorize } from "../../middlewares/auth";
 
 const router = express.Router();
 
 router
   .route("/")
   .get(getBrands)
-  .post(authorize(["admin"], ["active"]), createBrand);
+  .post(authenticate, authorize(["admin"], ["active"]), createBrand);
 router
   .route("/:id")
-  .put(updateBrand)
-  .delete(authorize(["admin"], ["active"]), deleteBrand)
+  .put(authenticate, authorize(["admin"], ["active"]), updateBrand)
+  .delete(authenticate, authorize(["admin"], ["active"]), deleteBrand)
   .get(getBrandById);
 
 export default router;

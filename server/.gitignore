@@ -4,3 +4,4 @@ dist
 .env
 nosql-prisma-rest.code-workspace
 uploads
+.vercel
