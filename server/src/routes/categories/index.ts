@@ -7,14 +7,18 @@ import {
   getCategoryById,
   updateCategory,
 } from "../../controllers/categories";
+import { authorize } from "../../middlewares/auth";
 
 const router = express.Router();
 
-router.route("/").get(getCategories).post(createCategory);
+router
+  .route("/")
+  .get(getCategories)
+  .post(authorize(["admin"], ["active"]), createCategory);
 router
   .route("/:id")
-  .put(updateCategory)
-  .delete(deleteCategory)
+  .put(authorize(["admin"], ["active"]), updateCategory)
+  .delete(authorize(["admin"], ["active"]), deleteCategory)
   .get(getCategoryById);
 
 export default router;

@@ -15,18 +15,38 @@ import {
   ordersRouters,
   usersRouters,
 } from "./routes";
+import { authenticate, authorize } from "./middlewares/auth";
 // import bodyParser from 'body-parser';
 
 const app = express();
 
-// app.use(helmet());
+app.use(helmet());
 
-app.use(json()); // application/json
-// // app.use(bodyParser.json());
+// Define allowed origins (only the web dashboard)
+const allowedOrigins = [
+  "https://alethad-alwatani.vercel.app", // Your dashboard domain
+  "http://localhost:3000", // For local development of the dashboard
+];
+
+// CORS configuration for the web dashboard
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests from allowed origins, skip CORS for non-browser clients
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Enable credentials if needed
+};
+
+app.use(cors(corsOptions));
+
+app.use(json());
 // app.use(express.urlencoded({ extended: true }));
 
-// app.use(compression());
-// app.use(cors());
+app.use(compression());
 
 app.get("/", async (req, res) => {
   try {
@@ -43,23 +63,17 @@ app.get("/", async (req, res) => {
 // app.use(limiter);
 
 app.use("/api/v1/auth", authRouters);
+app.use(authenticate);
 app.use("/api/v1/products", productsRouters);
 app.use("/api/v1/skus", skusRouters);
 app.use("/api/v1/categories", categoriesRouters);
 app.use("/api/v1/brands", brandsRouters);
 app.use("/api/v1/orders", ordersRouters);
-app.use("/api/v1/users", usersRouters);
-// app.use("/api/v1", isAuth, authorise(false, "user"), adminRoutes);
+app.use("/api/v1/users", authorize(["admin"], ["active"]), usersRouters);
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
-});
-
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  const status = err.status || 500;
-  const message = err.message;
-  res.status(status).json({ error: message });
 });

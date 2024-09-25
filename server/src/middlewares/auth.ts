@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { UserRole as Role, UserStatus } from "@prisma/client";
 import { AuthenticatedRequest, JwtUser } from "../../types";
-import responseHelper from "./response.helper";
+import ResponseHelper from "./response.helper";
 
 const authenticate = (
   req: AuthenticatedRequest,
@@ -28,12 +28,34 @@ const authenticate = (
 };
 
 const authorize =
-  (requiredRole: Role) =>
+  (allowedRoles?: Role[], allowedStatus?: UserStatus[]) =>
   (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
-    if (!userRole || userRole !== requiredRole) {
+    const userStatus = req.user?.status;
+    // console.log(req.user);
+    // console.log("userRole: " + userRole);
+    // console.log("allowedRoles: " + allowedRoles);
+
+    const responseHelper = new ResponseHelper(res);
+    if (!userRole || !userStatus) {
       return responseHelper.error("Unauthorized", 403);
     }
+
+    if (!allowedRoles || allowedRoles.length === 0) {
+      return next(); // No role restrictions
+    }
+    if (!allowedStatus || allowedStatus.length === 0) {
+      return next(); // No role restrictions
+    }
+
+    // Check if the user's role is in the allowed roles
+    if (!allowedStatus.includes(userStatus)) {
+      return responseHelper.error("status doesn't match", 403);
+    }
+    if (!allowedRoles.includes(userRole)) {
+      return responseHelper.error("role doesn't match", 403);
+    }
+
     next();
   };
 

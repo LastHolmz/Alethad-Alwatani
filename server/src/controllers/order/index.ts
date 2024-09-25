@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../../prisma/db";
-import { OrderItem, OrderStatus } from "@prisma/client";
+import { Order, OrderItem, OrderStatus } from "@prisma/client";
 import { generateUniqueBarcodeForOrder } from "../../lib/barcode";
 import { BadRequestError } from "../../errors";
 import { AuthenticatedRequest } from "../../../types";
@@ -249,6 +249,10 @@ export const cancelOrder = async (req: Request, res: Response) => {
     if (!status) {
       return res.json({ message: "يجب توفير الحالة" }).status(400);
     }
+    const resMsg = status === "refused" ? "تم رفض الطلبية" : "تم الغاء الطلبية";
+    if (status === "refused" || status === "rejected") {
+      return res.json({ message: "تم الغاء هذه الفاتورة بالفعل" });
+    }
     const order = await prisma.order.update({
       where: { id },
       data: {
@@ -256,7 +260,6 @@ export const cancelOrder = async (req: Request, res: Response) => {
       },
     });
     if (!order) return new BadRequestError("فشلت العملية");
-    const resMsg = status === "refused" ? "تم رفض الطلبية" : "تم الغاء الطلبية";
     return res.json({ data: order, message: resMsg });
   } catch (error) {
     console.log(error);
@@ -285,12 +288,16 @@ export const acceptOrder = async (req: AuthenticatedRequest, res: Response) => {
       where: { id },
       include: { orderItems: true },
     });
+
     if (!order) {
       return responseHelper.error("لم يتم ايجاد الطلبية", 404);
     }
+    if (order.status === "refused" || order.status === "rejected") {
+      return res.json({ message: "تم الغاء هذه الفاتورة بالفعل" });
+    }
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { status: status ?? "in" },
+      data: { status: status ?? "inProgress" },
     });
 
     const orderItems = order.orderItems;
@@ -316,10 +323,15 @@ export const acceptOrder = async (req: AuthenticatedRequest, res: Response) => {
  * @returns {Promise<Response>} The response object with the operation result.
  */
 export const returnOrder = async (req: AuthenticatedRequest, res: Response) => {
+  console.log("calling return order function ...");
   const responseHelper = new ResponseHelper(res);
   try {
     const { id } = req.params;
     const { status }: { status: OrderStatus } = req.body;
+
+    if (status === "refused" || status === "rejected") {
+      return res.json({ message: "تم الغاء هذه الفاتورة بالفعل" });
+    }
 
     if (!status) {
       return res.json({ message: "يجب توفير الحالة" }).status(400);
@@ -342,7 +354,7 @@ export const returnOrder = async (req: AuthenticatedRequest, res: Response) => {
         id,
       },
       data: {
-        status,
+        status: "rejected",
       },
       include: {
         orderItems: true,
@@ -353,7 +365,7 @@ export const returnOrder = async (req: AuthenticatedRequest, res: Response) => {
       return responseHelper.error("فشل تحديث المنتج");
     }
 
-    if (status === "pending" || status === "rejected" || status === "refused") {
+    if (status === "pending") {
       return responseHelper.success("تمت العملية بنجاح");
     }
 
@@ -387,6 +399,42 @@ export const deleteOrder = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     return res.json({ message: "تم الحذف بنجاح" }).status(201);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error, message: "حدث خطأ داخلي" });
+  }
+};
+
+export const updateOrderMoney = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const responseHelper = new ResponseHelper(res);
+  try {
+    const { id } = req.params;
+    const { totalPrice, rest } = req.body as Order;
+    if (!id) {
+      return responseHelper.error("يجب توفير الايدي", 400);
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id },
+    });
+    if (!order) {
+      return responseHelper.error("لم يتم ايجاد الطلبية", 404);
+    }
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: {
+        totalPrice,
+        rest,
+      },
+    });
+    if (!updatedOrder) {
+      return responseHelper.error("فشل التحديث", 400);
+    }
+
+    return res.json({ message: "تم التحديث بنجاح" }).status(201);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error, message: "حدث خطأ داخلي" });

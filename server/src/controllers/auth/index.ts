@@ -23,8 +23,8 @@ import ResponseHelper from "../../middlewares/response.helper";
  * @returns {Promise<Response>} The response object with the registration status.
  */
 const login = async (req: Request, res: Response) => {
+  console.log("calling login function...");
   const responseHelper = new ResponseHelper(res);
-
   try {
     const {
       password,

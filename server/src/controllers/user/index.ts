@@ -30,6 +30,7 @@ const updateUser = async (req: Request, res: Response) => {
       },
       data: {
         status,
+        role,
       },
     });
     responseHelper.success(user, "تم تحديث المستخدم");

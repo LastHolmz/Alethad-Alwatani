@@ -2,7 +2,7 @@ import { JwtUser } from "../../types";
 import jwt from "jsonwebtoken";
 const generateJwtToken = (user: JwtUser) => {
   const token: string = jwt.sign(
-    { user },
+    { ...user },
     process.env.JWT_PRIVATE_KEY as string,
     { expiresIn: "30d" }
   );

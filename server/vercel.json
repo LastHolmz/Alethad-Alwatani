@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "routes": [{ "src": "./dist/src/index.ts", "destination": "@vercel/node" }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}
