@@ -56,17 +56,33 @@ export const exportUserOrdersToExcel = (
   saveAs(blob, `${fileName}.xlsx`);
 };
 
-const ExportButton = ({ user, order }: { user: User; order: Order }) => {
+const ExportButton = ({
+  user,
+  order,
+  table = false,
+}: {
+  user: User;
+  order: Order;
+  table?: boolean;
+}) => {
   // Example data
 
   const handleExport = () => {
     exportUserOrdersToExcel(user, order, `فاتورة ${order.barcode}`);
   };
 
-  return (
-    <Button onClick={handleExport} className="mx-1">
+  return table ? (
+    <button
+      onClick={handleExport}
+      className="flex justify-between items-center w-full"
+    >
       تحميل
-      <BsFiletypeExe className=" mr-2 w-4 h-4" />
+      <BsFiletypeExe className="mr-2 w-4 h-4" />
+    </button>
+  ) : (
+    <Button variant={"outline"} onClick={handleExport} className="mx-1">
+      تحميل
+      <BsFiletypeExe className="mr-2 w-4 h-4" />
     </Button>
   );
 };

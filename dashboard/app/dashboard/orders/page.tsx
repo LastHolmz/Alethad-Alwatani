@@ -55,13 +55,13 @@ const page = async ({
               ["رقم الهاتف"]: false,
             }}
           >
-            <CustomLink
-              className="mx-2 bg-primary hover:bg-primary/80"
-              variant={"destructive"}
-              href="products/new"
-            >
-              منتج جديد
-            </CustomLink>
+            {/* <CustomLink
+            className="mx-2 bg-primary hover:bg-primary/80"
+            variant={"destructive"}
+            href="products/new"
+          >
+            منتج جديد
+          </CustomLink> */}
           </ProductTable>
         </Suspense>
       </div>

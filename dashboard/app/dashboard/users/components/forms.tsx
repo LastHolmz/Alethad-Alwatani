@@ -25,7 +25,6 @@ export const CreateUserForm = () => {
       className="mt-4 mb-2"
     >
       <div className="grid gap-1 md:grid-cols-2">
-        س
         <div>
           <Label htmlFor="fullName">اسم المشرف</Label>
           <Input

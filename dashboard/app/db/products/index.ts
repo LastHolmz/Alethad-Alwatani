@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache, unstable_noStore } from "next/cache";
 import uri from "@/lib/uri";
 
 export const getProducts = unstable_cache(
@@ -102,8 +102,8 @@ export const deleteProduct = async ({
     return { message: "حدث خطأ" };
   }
 };
-
 export const getProductById = async (id: string) => {
+  unstable_noStore();
   try {
     const res = await fetch(`${uri}/products/${id}`);
     const data: { data: Product } = await res.json();

@@ -23,7 +23,12 @@ import { parseDateTime } from "@/lib/date";
 import { FaPrint } from "react-icons/fa";
 import ExportButton from "../components/extract-as-exel";
 import { CustomLink } from "@/components/ui/custom-link";
-import { ReturnOrderForm } from "../components/forms";
+import {
+  AcceptOrderForm,
+  RejectOrderForm,
+  ReturnOrderForm,
+  UpdateOrderMoenyForm,
+} from "../components/forms";
 const page = async ({ params }: { params: { orderId: string } }) => {
   const { orderId } = params;
   const order = await getOrderById(orderId);
@@ -106,32 +111,45 @@ const page = async ({ params }: { params: { orderId: string } }) => {
               </div>
             </li>
             <Separator />
+            <li className="flex justify-between items-center">
+              <div>اسم التاجر</div>
+              <div>{order?.user?.fullName}</div>
+            </li>
+            <Separator />
+            <li className="flex justify-between items-center">
+              <div>رقم الهاتف</div>
+              <div>{order?.user?.mobile}</div>
+            </li>
+            <Separator />
           </ul>
         </div>
-        {/* <UpdateProductForm
-          product={order}
-          categories={categories}
-          brands={brands}
-        /> */}
+
         <Suspense fallback={"جاري التحميل"}>
           <ReusableTable
             showSearch={false}
-            defaultColumnVisibility={
-              {
-                // ["صورة المنتج"]: false,
-              }
-            }
             columns={cartColumn}
             data={order?.orderItems ?? []}
           >
-            <ExportButton order={order} user={order.user} />
-            <CustomLink href={`/dashboard/orders/${order.id}/print`}>
-              طباعة
-              <FaPrint className="mr-2 w-4 h-4 rotate-180" />
-            </CustomLink>
-            <div className="mx-2">
-              <ReturnOrderForm order={order} />
-            </div>{" "}
+            <div className="inline-flex flex-1">
+              <div className="flex justify-between items-center">
+                <div>
+                  <ExportButton order={order} user={order.user} />
+                  <CustomLink
+                    variant={"outline"}
+                    href={`/dashboard/orders/${order.id}/print`}
+                  >
+                    طباعة
+                    <FaPrint className="mr-2 w-4 h-4 text-blue-500" />
+                  </CustomLink>
+                </div>
+                <div>
+                  <ReturnOrderForm order={order} />
+                  <AcceptOrderForm order={order} />
+                  <RejectOrderForm order={order} />
+                  <UpdateOrderMoenyForm order={order} />
+                </div>
+              </div>
+            </div>
           </ReusableTable>
         </Suspense>
       </div>

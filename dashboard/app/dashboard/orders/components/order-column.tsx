@@ -17,6 +17,16 @@ import ReusableRow from "../../components/reusable-row";
 // import { UpdateUserStatusForm } from "./forms";
 import { cn, orderStatusToArabic } from "@/lib/utils";
 import Link from "next/link";
+import {
+  AcceptOrderForm,
+  RejectOrderForm,
+  ReturnOrderForm,
+  UpdateOrderMoenyForm,
+} from "./forms";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import { FaPrint, FaRegCopy } from "react-icons/fa6";
+import ExportButton from "./extract-as-exel";
+import { CustomLink } from "@/components/ui/custom-link";
 
 export const orderColumn: ColumnDef<Order>[] = [
   {
@@ -89,6 +99,7 @@ export const orderColumn: ColumnDef<Order>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>الأحداث</DropdownMenuLabel>
             <DropdownMenuItem
+              className="flex justify-between items-center w-full"
               onClick={() => {
                 navigator.clipboard.writeText(String(order.barcode));
                 toast({
@@ -98,15 +109,48 @@ export const orderColumn: ColumnDef<Order>[] = [
               }}
             >
               نسح الباركود
+              <FaRegCopy />
             </DropdownMenuItem>
 
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <Link href={`/dashboard/orders/${order.id}`}>معلومات</Link>
+              <Link
+                className="flex justify-between items-center w-full"
+                href={`/dashboard/orders/${order.id}`}
+              >
+                معلومات
+                <IoIosInformationCircleOutline />
+              </Link>
             </DropdownMenuItem>
-            {/* <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <UpdateUserStatusForm user={user} />
-            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
+
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <AcceptOrderForm order={order} table />
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <ReturnOrderForm order={order} table />
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <RejectOrderForm order={order} table />{" "}
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <UpdateOrderMoenyForm table order={order} />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Link
+                className="flex justify-between items-center w-full"
+                href={`/dashboard/orders/${order.id}/print`}
+              >
+                طباعة
+                <FaPrint className=" text-blue-500" />
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <ExportButton table order={order} user={order.user} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
