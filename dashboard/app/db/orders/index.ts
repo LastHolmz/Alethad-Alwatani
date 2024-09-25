@@ -2,11 +2,25 @@
 
 import { revalidatePath, revalidateTag, unstable_noStore } from "next/cache";
 import uri from "@/lib/uri";
+import { getSession } from "@/lib/auth";
 
 export const getOrders = async (barcode?: string) => {
   unstable_noStore();
   try {
-    const res = await fetch(`${uri}/orders?${barcode && `barcode=${barcode}`}`);
+    const authUser = await getSession();
+    if (!authUser) {
+      return [];
+    }
+
+    const res = await fetch(
+      `${uri}/orders?${barcode && `barcode=${barcode}`}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authUser.token}`,
+        },
+      }
+    );
     if (!res.ok) {
       return [];
     }
@@ -29,11 +43,19 @@ export const changeOrderStatus = async ({
 }): Promise<{ message: string }> => {
   console.log(`${uri}/orders/${id}/${to}`);
   try {
+    const authUser = await getSession();
+    if (!authUser) {
+      return { message: "يجب تسجيل الدخول للتمكن من اكمال العملية" };
+    }
+
     const res = await fetch(`${uri}/orders/${id}/${to.trim()}`, {
       method: "PUT",
       // body: JSON.stringify(product),
       headers: {
-        "Content-Type": "application/json", // Add the Content-Type header
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authUser.token}`,
+
+        // Add the Content-Type header
       },
       body: JSON.stringify({ status }),
     });
@@ -62,11 +84,17 @@ export const updateOrderMoney = async ({
 }): Promise<{ message: string }> => {
   // console.log(`${uri}/orders/${id}/update-money`);
   try {
+    const authUser = await getSession();
+    if (!authUser) {
+      return { message: "يجب تسجيل الدخول للتمكن من اكمال العملية" };
+    }
+
     const res = await fetch(`${uri}/orders/${id}/update-money`, {
       method: "PUT",
       // body: JSON.stringify(product),
       headers: {
-        "Content-Type": "application/json", // Add the Content-Type header
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authUser.token}`,
       },
       body: JSON.stringify({
         totalPrice,
@@ -90,7 +118,16 @@ export const updateOrderMoney = async ({
 
 export const getOrderById = async (id: string) => {
   try {
-    const res = await fetch(`${uri}/orders/${id}`);
+    const authUser = await getSession();
+    if (!authUser) {
+      return undefined;
+    }
+    const res = await fetch(`${uri}/orders/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authUser.token}`,
+      },
+    });
     const data: { data: Order } = await res.json();
     if (!data) {
       return undefined;

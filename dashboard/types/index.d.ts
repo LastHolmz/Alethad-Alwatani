@@ -61,6 +61,7 @@ declare interface User {
   createdAt: Date; // JavaScript Date type for DateTime
   updatedAt: Date; // JavaScript Date type for DateTime, automatically update
   orders: Order[];
+  token?: string;
 }
 
 interface Order {
@@ -101,3 +102,12 @@ type UserStatus = "pending" | "active" | "inactive";
 type Gender = "man" | "woman";
 
 type OrderStatus = "pending" | "inProgress" | "done" | "rejected" | "refused";
+
+declare interface UserSession {
+  fullName: string;
+  id: string;
+  mobile: number;
+  status: UserStatus;
+  role: UserRole;
+  token?: string;
+}

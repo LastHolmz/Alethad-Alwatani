@@ -87,3 +87,40 @@ export const orderStatusToArabic = (status: OrderStatus): string => {
 
   return translations[status];
 };
+
+export interface FocusElementProps<T extends HTMLElement> {
+  elementRef: React.RefObject<T>;
+}
+
+/**
+ * Focuses on the element referenced by the provided ref.
+ *
+ * @param elementRef - A ref object pointing to the HTML element to focus on.
+ */
+export const focusTo = <T extends HTMLElement>({
+  elementRef,
+}: FocusElementProps<T>) => {
+  if (elementRef.current) {
+    elementRef.current?.focus();
+  }
+};
+
+/**
+ * Validates a phone number to ensure it starts with one of the specified prefixes
+ * (092, 091, 094, or 093) and is exactly 10 digits long.
+ *
+ * @param {string} phoneNumber - The phone number to validate.
+ * @returns {boolean} `true` if the phone number is valid, `false` otherwise.
+ *
+ * @example
+ * // Returns true
+ * isValidPhoneNumber('0921234567');
+ *
+ * @example
+ * // Returns false
+ * isValidPhoneNumber('0891234567');
+ */
+export function isValidPhoneNumber(phoneNumber: string): boolean {
+  const pattern = /^(092|091|094|093|92|91|94|93)\d{7}$/;
+  return pattern.test(phoneNumber);
+}

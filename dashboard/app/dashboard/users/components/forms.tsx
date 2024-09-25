@@ -14,8 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import InputValidator from "@/app/components/validated-input";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 export const CreateUserForm = () => {
+  const [error, setError] = useState<boolean>(false);
+
   return (
     <AccessibleDialogForm
       trigger={<Button type="button">مشرف جديد</Button>}
@@ -37,12 +42,16 @@ export const CreateUserForm = () => {
         </div>
         <div>
           <Label htmlFor="mobile">رقم الهاتف</Label>
-          <Input
+
+          <InputValidator
             id="mobile"
             required
             type={"tel"}
             name="mobile"
-            placeholder="ادخل رقم الهاتف"
+            dir="rtl"
+            error={error}
+            setError={setError}
+            placeholder="ادخل رقم هاتفك"
           />
         </div>
         <div>
@@ -69,7 +78,17 @@ export const CreateUserForm = () => {
           </Select>
         </div>
       </div>
-      <SubmitButton className="w-full sm:w-1/4 mt-2" type={"submit"}>
+      <SubmitButton
+        onClick={() => {
+          if (error) {
+            toast({
+              title: "يجب ادخال البيانات بطريقة صحيحة",
+            });
+          }
+        }}
+        className="w-full mx-auto sm:w-1/4 mt-4"
+        type={error ? "button" : "submit"}
+      >
         انشاء
       </SubmitButton>
     </AccessibleDialogForm>

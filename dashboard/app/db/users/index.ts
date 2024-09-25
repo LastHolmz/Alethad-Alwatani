@@ -2,11 +2,22 @@
 
 import { revalidatePath, unstable_noStore } from "next/cache";
 import uri from "@/lib/uri";
+import { getSession } from "@/lib/auth";
 
 export const getUseres = async (query?: string) => {
   unstable_noStore();
   try {
-    const res = await fetch(`${uri}/users?${query && `name=${query}`}`);
+    const user = await getSession();
+    if (!user) {
+      return [];
+    }
+
+    const res = await fetch(`${uri}/users?${query && `name=${query}`}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
     if (!res.ok) {
       return [];
     }
@@ -24,14 +35,22 @@ export const createUser = async ({
   user: Omit<User, "id" | "createdAt" | "updatedAt" | "orders">;
 }): Promise<{ message: string }> => {
   try {
+    const authUser = await getSession();
+    if (!authUser) {
+      return { message: "يجب تسجيل الدخول للتمكن من اكمال العملية" };
+    }
+
     const res = await fetch(`${uri}/users`, {
       method: "POST",
       body: JSON.stringify(user),
       headers: {
-        "Content-Type": "application/json", // Add the Content-Type header
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authUser.token}`,
+
+        // Add the Content-Type header
       },
     });
-    console.log(JSON.stringify(user));
+    console.log(JSON.stringify(authUser));
     const data: { data: Product; message: string } = await res.json();
 
     if (!data) {
@@ -54,13 +73,16 @@ export const updateUserStatus = async ({
   status: string;
 }): Promise<{ message: string }> => {
   try {
+    const authUser = await getSession();
+    if (!authUser) {
+      return { message: "يجب تسجيل الدخول للتمكن من اكمال العملية" };
+    }
+
     const res = await fetch(`${uri}/users/${id}`, {
       method: "PUT",
-      // body: JSON.stringify(product),
       headers: {
         "Content-Type": "application/json",
-
-        // Add the Content-Type header
+        Authorization: `Bearer ${authUser.token}`,
       },
       body: JSON.stringify({
         status: status,
