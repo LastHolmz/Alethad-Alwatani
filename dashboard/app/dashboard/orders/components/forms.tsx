@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import SubmitButton from "@/app/dashboard/components/custom-submit-btn";
 
 import AccessibleDialogForm from "../../components/accible-dialog-form";
-import { updateOrderAction } from "../new/actions";
+import { updateOrderAction } from "../actions";
 import { Button } from "@/components/ui/button";
 import { PiKeyReturnBold } from "react-icons/pi";
 
