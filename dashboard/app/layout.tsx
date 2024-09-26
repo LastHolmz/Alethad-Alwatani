@@ -23,18 +23,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const pathname = usePathname();
   // const user = await getSession();
-  // const requestHeaders = headers(); // Access the headers object
-  // const pathname = requestHeaders.get("referer"); // Get the URL from the referer header
-  // console.log(user);
-  // if (!user) {
-  //   redirect("/sign-in");
+  // if (user && user.role === "admin") {
   // }
-  // console.log(pathname);
-  // if (!pathname.includes("sign-in") && !pathname.includes("dashboard")) {
-  //   redirect("/dashboard");
-  // }
+
   return (
     <html suppressHydrationWarning lang="en" dir="rtl">
       <body className={cn(notoNaskhArabic.className)}>

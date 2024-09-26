@@ -1,10 +1,9 @@
-import NavigationRail from "./components/naviagation-rail";
 import "../globals.css";
+import NavigationRail from "./components/naviagation-rail";
 import { Metadata } from "next";
-import { revalidateTag } from "next/cache";
 import DoNotRenderIf from "./components/do-not-render";
-// import Header from "./components/header";
-// import { redirection } from "@/lib/role-access-server";
+import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: {
@@ -13,19 +12,13 @@ export const metadata: Metadata = {
   },
 };
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
-  //   await redirection({
-  //     accessbleRoles: [
-  //       "doctor",
-  //       "employee",
-  //       "reception",
-  //       "superAdmin",
-  //       "patient",
-  //       "trainer",
-  //     ],
-  //     redirectLink: "/sign-in",
-  //   });
-  // revalidateTag("products");
-  // revalidateTag("categories");
+  const user = await getSession();
+  if (!user) {
+    redirect("/sign-in");
+  }
+  if (user && user.role !== "admin") {
+    redirect("/sign-in");
+  }
 
   return (
     <main
