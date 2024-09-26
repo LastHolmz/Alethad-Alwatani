@@ -236,6 +236,7 @@ const checkToken = async (req: Request, res: Response) => {
       return responseHelper.error("must to provide token", 400);
     }
     const decodedToken = decodedJwtToken(token);
+    console.log(decodedToken);
 
     if (!decodedToken) {
       return responseHelper.error("must to provide a proper token", 400);
@@ -243,7 +244,7 @@ const checkToken = async (req: Request, res: Response) => {
     // console.log(decodedToken);
 
     const user = await prisma.user.findUnique({
-      where: { id: decodedToken.user.userId },
+      where: { id: decodedToken.userId },
     });
     if (!user) {
       return responseHelper.error("the user isn't available anymore", 400);

@@ -11,9 +11,10 @@ const generateJwtToken = (user: JwtUser) => {
 };
 
 const decodedJwtToken = (token: string) => {
-  const response = jwt.verify(token, process.env.JWT_PRIVATE_KEY as string) as {
-    user: JwtUser;
-  };
+  const response = jwt.verify(
+    token,
+    process.env.JWT_PRIVATE_KEY as string
+  ) as JwtUser;
   if (!response || response === null || response === undefined) {
     return undefined;
   }

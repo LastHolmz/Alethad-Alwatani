@@ -66,6 +66,20 @@ const getUsers = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "INTERNAL_SERVER_ERROR" });
   }
 };
+const getUserById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return res.json({ data: undefined }).status(404);
+    }
+    return res.json({ data: user }).status(200);
+  } catch (error) {
+    console.error(error); // Use console.error for error logging
+    return res.status(500).json({ message: "INTERNAL_SERVER_ERROR" });
+  }
+};
 const createUser = async (req: AuthenticatedRequest, res: Response) => {
   const responseHelper = new ResponseHelper(res);
 
@@ -125,4 +139,4 @@ const createUser = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export { updateUser, getUsers, createUser };
+export { updateUser, getUsers, createUser, getUserById };
