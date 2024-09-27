@@ -34,7 +34,6 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     final String token = await getStoredToken();
-
     Uri uri = apiUri(
         'auth/check-token/${defaultToken != null ? defaultToken : token}');
 
@@ -44,10 +43,12 @@ class UserProvider extends ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+    print(uri);
     if (res.statusCode == 200) {
       Map<String, dynamic> data = await json.decode(res.body);
       dynamic userData = data["data"];
       _user = User.fromJson(userData);
+
       _isLoggedIn = true;
       _isLoading = false;
       await updateToken(user?.token ?? "");

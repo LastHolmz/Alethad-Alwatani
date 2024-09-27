@@ -11,7 +11,6 @@ import {
 import Link from "next/link";
 import { usersColumn } from "./components/user-column";
 import ProductTable from "../components/reusable-table";
-import { CustomLink } from "@/components/ui/custom-link";
 import { getUseres } from "@/app/db/users";
 import { CreateUserForm } from "./components/forms";
 
